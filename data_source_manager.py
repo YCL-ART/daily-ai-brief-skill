@@ -413,7 +413,7 @@ def test_data_sources():
     manager = DataSourceManager()
     
     # 测试获取数据
-    summary = manager.get_ai_news_summary(max_items=5)
+    summary = manager.get_ai_news_summary()
     
     if summary["success"]:
         print(f"✅ 成功获取 {summary['total']} 条新闻")

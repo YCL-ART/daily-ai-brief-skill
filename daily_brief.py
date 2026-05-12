@@ -118,8 +118,6 @@ class EnhancedAIBrief:
         """生成每日AI简报（只使用真实数据源）"""
         print("📊 开始生成AI每日简报...")
         
-        target_items = self.generation_config.get("num_items", 5)
-        
         all_items = []
         real_items_count = 0
         
@@ -135,9 +133,6 @@ class EnhancedAIBrief:
                 print(f"✅ 成功获取 {real_items_count} 条真实新闻")
             else:
                 print(f"⚠️ 获取真实数据失败: {real_news_result.get('error', '未知错误')}")
-        
-        # 限制总条目数
-        all_items = all_items[:target_items]
         
         # 分类统计
         categories = {}
