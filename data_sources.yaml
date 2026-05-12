@@ -10,6 +10,7 @@ rss_sources:
     category: "industry"
     enabled: true
     priority: 1
+    num_items: 5  # 该渠道默认采集条数
     filters:
       include_keywords: ["AI", "人工智能", "OpenAI", "模型", "芯片"]
     
@@ -20,6 +21,7 @@ rss_sources:
     category: "research"
     enabled: true
     priority: 2
+    num_items: 5  # 该渠道默认采集条数
     
   # Anthropic Claude Code Releases
   - name: "Claude Code Releases"
@@ -28,6 +30,7 @@ rss_sources:
     category: "product"
     enabled: true
     priority: 1
+    num_items: 5  # 该渠道默认采集条数
     
   # OpenAI官方博客
   - name: "OpenAI官方博客"
@@ -36,6 +39,7 @@ rss_sources:
     category: "product"
     enabled: true
     priority: 1
+    num_items: 5  # 该渠道默认采集条数
     filters:
       exclude_keywords: ["customer", "case study", "企业案例"]
     
@@ -46,6 +50,7 @@ rss_sources:
     category: "tips"
     enabled: true
     priority: 3
+    num_items: 5  # 该渠道默认采集条数
 
 # X/Twitter数据源（通过Nitter或类似服务）
 x_sources:
@@ -55,6 +60,7 @@ x_sources:
     category: "model"
     enabled: true
     priority: 1
+    num_items: 5  # 该渠道默认采集条数
     
   - name: "OpenRouter"
     username: "OpenRouter"
@@ -62,6 +68,7 @@ x_sources:
     category: "model"
     enabled: true
     priority: 1
+    num_items: 5  # 该渠道默认采集条数
     
   - name: "腾讯混元"
     username: "TencentHunyuan"
@@ -69,6 +76,7 @@ x_sources:
     category: "model"
     enabled: true
     priority: 1
+    num_items: 5  # 该渠道默认采集条数
     
   - name: "Anthropic相关"
     usernames: ["frxiaobei", "kimmonismus", "xiaohu"]
@@ -222,37 +230,7 @@ source_priority:
     "x.com": "social_media"
     "twitter.com": "social_media"
 
-# 备用内容生成配置
-fallback_generation:
-  enabled: true
-  min_required_items: 5
-  use_partial_data: true
-  
-  # 生成内容模板
-  templates:
-    model_update:
-      title_patterns:
-        - "{company}发布{model}新版本"
-        - "{model}在{domain}领域取得突破"
-      description_patterns:
-        - "{company}宣布推出{model}的最新版本，性能提升显著。"
-        - "研究人员在{domain}领域使用{model}取得新进展。"
-    
-    product_release:
-      title_patterns:
-        - "{company}开源{product}模板"
-        - "新AI工具：{product}正式发布"
-      description_patterns:
-        - "{company}发布了{product}，专注于{function}。"
-        - "基于{technology}的新工具{product}上线，支持多种任务。"
-    
-    industry_trend:
-      title_patterns:
-        - "{company}估值激增{amount}"
-        - "{industry}领域迎来新竞争"
-      description_patterns:
-        - "{company}在近期融资中估值大幅上升，显示市场对{technology}的看好。"
-        - "{industry}领域出现新的竞争者，推动行业创新发展。"
+
 
 # 数据验证配置
 data_validation:

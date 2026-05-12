@@ -102,23 +102,34 @@ class DataSourceManager:
         category = source_config.get("category", "industry")
         
         if not source_url:
+            print(f"⚠️ 渠道 {source_name} URL为空，跳过")
             return []
         
         # 检查缓存
         cache_key = self.get_cache_key(source_name, source_url)
         cached_data = self.get_cached_data(cache_key)
         if cached_data:
-            print(f"📄 使用缓存数据: {source_name}")
+            print(f"📄 渠道 {source_name} 使用缓存数据")
             return cached_data
         
-        print(f"🔍 获取RSS数据: {source_name}")
+        print(f"🔍 渠道 {source_name} 开始采集...")
         
         try:
             # 使用feedparser解析RSS
             feed = feedparser.parse(source_url)
             
+            # 检查是否有错误
+            if hasattr(feed, 'bozo_exception') and feed.bozo_exception:
+                print(f"⚠️ 渠道 {source_name} RSS解析错误: {feed.bozo_exception}")
+                return []
+            
             items = []
             max_items = self.config.get("fetch_config", {}).get("max_items_per_source", 10)
+            
+            # 检查是否有条目
+            if not hasattr(feed, 'entries') or not feed.entries:
+                print(f"📭 渠道 {source_name} 没有可用的新闻条目")
+                return []
             
             for entry in feed.entries[:max_items]:
                 # 提取发布时间
@@ -173,7 +184,7 @@ class DataSourceManager:
             return items
             
         except Exception as e:
-            print(f"❌ RSS源 {source_name} 获取失败: {e}")
+            print(f"❌ 渠道 {source_name} RSS采集失败: {e}")
             return []
     
     def fetch_api_source(self, source_config: Dict) -> List[Dict]:
@@ -183,16 +194,17 @@ class DataSourceManager:
         endpoint = source_config.get("endpoint", "")
         
         if not endpoint:
+            print(f"⚠️ 渠道 {source_name} endpoint为空，跳过")
             return []
         
         # 检查缓存
         cache_key = self.get_cache_key(source_name, endpoint)
         cached_data = self.get_cached_data(cache_key)
         if cached_data:
-            print(f"📄 使用缓存数据: {source_name}")
+            print(f"📄 渠道 {source_name} 使用缓存数据")
             return cached_data
         
-        print(f"🔍 获取API数据: {source_name}")
+        print(f"🔍 渠道 {source_name} 开始采集...")
         
         try:
             if source_type == "google_news":
@@ -203,7 +215,7 @@ class DataSourceManager:
                 return self.fetch_generic_api(source_config)
                 
         except Exception as e:
-            print(f"❌ API源 {source_name} 获取失败: {e}")
+            print(f"❌ 渠道 {source_name} API采集失败: {e}")
             return []
     
     def fetch_google_news(self, source_config: Dict) -> List[Dict]:
@@ -300,15 +312,21 @@ class DataSourceManager:
         return default_category
     
     def fetch_all_sources(self) -> List[Dict]:
-        """从所有启用的数据源获取数据"""
+        """从所有启用的数据源获取数据（每个渠道独立采集，采集不到就空着）"""
         all_items = []
         
         # 获取RSS源数据
         rss_sources = self.config.get("rss_sources", [])
         for source in rss_sources:
             if source.get("enabled", False):
-                items = self.fetch_rss_source(source)
-                all_items.extend(items)
+                try:
+                    items = self.fetch_rss_source(source)
+                    all_items.extend(items)
+                    print(f"✅ 渠道 {source.get('name')} 采集到 {len(items)} 条数据")
+                except Exception as e:
+                    print(f"⚠️ 渠道 {source.get('name')} 采集失败: {e}")
+                    # 失败时不添加任何数据，保持为空
+                
                 # 避免请求过快
                 time.sleep(0.5)
         
@@ -316,8 +334,14 @@ class DataSourceManager:
         api_sources = self.config.get("api_sources", [])
         for source in api_sources:
             if source.get("enabled", False):
-                items = self.fetch_api_source(source)
-                all_items.extend(items)
+                try:
+                    items = self.fetch_api_source(source)
+                    all_items.extend(items)
+                    print(f"✅ 渠道 {source.get('name')} 采集到 {len(items)} 条数据")
+                except Exception as e:
+                    print(f"⚠️ 渠道 {source.get('name')} 采集失败: {e}")
+                    # 失败时不添加任何数据，保持为空
+                
                 # 避免请求过快
                 time.sleep(1)
         
@@ -334,20 +358,34 @@ class DataSourceManager:
                 seen_titles.add(title)
                 unique_items.append(item)
         
+        print(f"📊 总计采集到 {len(unique_items)} 条唯一数据")
         return unique_items
     
-    def get_ai_news_summary(self, max_items: int = 10) -> Dict[str, Any]:
-        """获取AI新闻摘要"""
+    def get_ai_news_summary(self) -> Dict[str, Any]:
+        """获取AI新闻摘要（允许空数据）"""
         all_items = self.fetch_all_sources()
         
+        # 即使没有数据也返回成功，但包含空列表
         if not all_items:
+            print("📭 所有渠道均未采集到数据")
             return {
-                "success": False,
-                "error": "未获取到任何新闻数据",
+                "success": True,  # 仍然返回成功，表示采集过程正常
                 "items": [],
                 "total": 0,
-                "categories": {}
+                "categories": {},
+                "timestamp": datetime.now().isoformat()
             }
+        
+        # 计算所有数据源的总num_items
+        total_max_items = 0
+        for source_type in ["rss_sources", "x_sources", "web_scrapers", "api_sources"]:
+            sources = self.config.get(source_type, [])
+            for source in sources:
+                if source.get("enabled", False):
+                    total_max_items += source.get("num_items", 5)  # 默认5条
+        
+        # 限制总条数，但不超过实际采集到的条数
+        max_items = min(total_max_items, len(all_items))
         
         # 按类别统计
         categories = {}
