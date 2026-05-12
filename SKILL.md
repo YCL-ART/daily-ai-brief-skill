@@ -1,25 +1,33 @@
 # AI每日简报技能
 
 ## 概述
-一个智能的AI领域简报生成技能，专为Claude Code和OpenClaw优化。每日生成AI热点和趋势分析报告，支持从真实数据源获取AI新闻，并生成专业的Markdown格式简报。
+一个简洁高效的AI新闻简报生成技能，专为Claude Code和OpenClaw优化。每日自动从多个可靠数据源采集AI领域最新动态，生成干净的Markdown格式简报，帮助您快速掌握AI行业前沿信息。
+
+**核心价值**：
+- 📰 **真实新闻**: 仅使用真实数据源，无生成内容
+- ⚡ **即用即得**: 一键生成，开箱即用
+- 🔗 **来源透明**: 每条新闻标注来源和原文链接
+- 🎯 **简洁专注**: 去除冗余信息，专注核心内容
 
 ## 核心功能
 
-### 真实数据源集成
-- **RSS数据源**: 从多个AI新闻网站获取真实新闻
-- **API数据源**: 支持GitHub Releases等API
-- **智能分类**: 基于关键词自动分类（内部处理，不在报告中显示）
+### 智能数据采集
+- **多源聚合**: 从8+个AI新闻RSS源实时采集（36氪、MIT Tech Review、TechCrunch等）
 - **内容过滤**: 自动过滤广告和低质量内容
+- **去重处理**: 智能识别并去除重复新闻
+- **时效控制**: 仅保留72小时内的最新新闻
 
-### 真实数据模式
-- **纯真实数据**: 仅使用真实新闻数据，不生成内容
-- **透明标注**: 清晰标注新闻来源和原文链接
-- **可配置策略**: 支持多数据源和过滤规则
+### 简洁报告生成
+- **纯真实数据**: 100%真实新闻，零生成内容
+- **透明标注**: 每条新闻清晰标注来源和原文链接
+- **极简格式**: 移除摘要、分类等冗余信息，专注新闻本身
+- **自动保存**: 每日简报自动保存为Markdown文件
 
-### 平台优化
-- **Claude Code原生支持**: 无缝集成到Claude Code工作流
-- **OpenClaw兼容**: 提供专用API接口和输出格式
-- **标准Python包**: 可作为独立Python模块使用
+### 多平台适配
+- **Claude Code原生集成**: 完美融入Claude Code工作流
+- **OpenClaw API兼容**: 提供标准化的JSON输出接口
+- **独立Python模块**: 可作为通用Python包使用
+- **定时任务支持**: 支持每日自动运行
 
 ## 使用方法
 
@@ -44,7 +52,7 @@ print(brief.get_summary(result))
 
 # 获取完整报告
 if result["success"]:
-    print(brief.get_formatted_report(result))
+    print(result["report"])
 ```
 
 ### Claude Code集成示例
@@ -177,10 +185,9 @@ result = brief.generate_daily_brief()
 ```
 
 ### 配置参数
-- **num_items**: 简报条目数（默认：5）
-- **use_real_data**: 是否使用真实数据（默认：true）
-- **min_real_items**: 最少真实数据项数（默认：3）
-- **fallback_enabled**: 是否启用备用生成（默认：true）
+- **auto_save**: 是否自动保存报告（默认：true）
+- **format**: 输出格式（默认："markdown"）
+- **data_source_config**: 数据源配置文件路径（默认："data_sources.yaml"）
 
 ## 输出格式
 

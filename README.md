@@ -1,25 +1,28 @@
 # AI每日简报生成器
 
-一个智能的AI领域简报生成工具，每日生成AI热点和趋势分析报告。支持从真实数据源获取AI新闻，并生成专业的Markdown格式简报。专为Claude Code和OpenClaw优化。
+🚀 **一键获取AI领域最新动态，专注真实新闻的简洁简报工具**
+
+一个高效、简洁的AI新闻简报生成器，每日自动从多个权威数据源采集AI领域最新进展，生成干净、专注的Markdown格式简报。专为开发者、技术爱好者和AI从业者设计，帮助您快速掌握行业前沿信息。
 
 ## ✨ 核心特性
 
-### 智能数据源集成
-- **真实数据采集**: 从多个AI新闻网站的RSS源和API获取真实新闻
-- **智能分类系统**: 基于关键词自动分类（内部处理，不在报告中显示）
-- **内容过滤**: 自动过滤广告和低质量内容
-- **多语言支持**: 支持中英文AI新闻内容
-- **缓存机制**: 内置缓存系统，避免重复请求
+### 📡 智能数据聚合
+- **多源实时采集**: 集成36氪、MIT Tech Review、TechCrunch等8+个AI新闻RSS源
+- **智能内容处理**: 自动过滤广告、去重、时效控制（仅72小时内新闻）
+- **可靠数据源**: 100%真实新闻，无生成内容，确保信息准确性
+- **中英文支持**: 同时采集中文和英文AI新闻内容
 
-### 真实数据模式
-- **纯真实数据**: 仅使用真实新闻数据，不生成内容
-- **透明标注**: 清晰标注新闻来源和原文链接
-- **可配置策略**: 支持多数据源和过滤规则
+### 🎯 极简报告生成
+- **专注核心内容**: 移除摘要、分类等冗余信息，直接呈现新闻
+- **透明来源标注**: 每条新闻清晰标注来源和原文链接
+- **自动格式优化**: 智能排版，生成易读的Markdown格式
+- **每日自动保存**: 简报自动保存为时间戳命名的文件
 
-### 多平台兼容
-- **Claude Code**: 原生支持，可直接集成使用
-- **OpenClaw**: 完全兼容，提供专用API接口
-- **标准Python**: 可作为独立Python包使用
+### 🔌 多场景适配
+- **Claude Code原生集成**: 无缝融入Claude Code开发工作流
+- **OpenClaw API支持**: 提供标准JSON输出，便于系统集成
+- **独立Python包**: 可作为通用Python模块在任何项目中调用
+- **定时任务友好**: 支持cron定时任务，实现每日自动运行
 
 ## 🚀 快速开始
 
@@ -49,7 +52,7 @@ print(brief.get_summary(result))
 
 # 获取完整报告
 if result["success"]:
-    print(brief.get_formatted_report(result))
+    print(result["report"])
 ```
 
 ### OpenClaw集成
@@ -71,127 +74,96 @@ if result["success"]:
 
 ## ⚙️ 配置说明
 
-### 主配置文件 (config.yaml)
+### 核心配置选项
+项目使用内置配置，主要选项如下：
+
 ```yaml
-# 简报生成选项
-generation:
-  num_items: 5                    # 简报条目数
-  auto_save: true                 # 是否自动保存
-  format: "markdown"              # 输出格式
-  
-  # 增强版数据源配置
-  use_real_data: true             # 是否使用真实数据
-  min_real_items: 3               # 最少真实数据项数
-  fallback_enabled: true          # 是否启用备用生成
-
-# AI相关主题（用于备用生成）
-topics:
-  - "大语言模型进展"
-  - "AI工具更新"
-  - "开源项目发布"
-  - "AI研究突破"
-  - "行业应用案例"
-  - "AI安全与伦理"
-  - "AI硬件发展"
-  - "AI政策动态"
-
-# 公司列表
-companies:
-  - "OpenAI"
-  - "Anthropic"
-  - "Google"
-  - "Meta"
-  - "Microsoft"
-  - "阿里云"
-  - "腾讯"
-  - "百度"
-  - "字节跳动"
-  - "华为"
-
-# AI模型列表
-models:
-  - "GPT-4"
-  - "Claude 3"
-  - "Gemini"
-  - "Llama 3"
-  - "Mistral"
-  - "Qwen"
-  - "DeepSeek"
-  - "Yi"
-  - "Baichuan"
-  - "通义千问"
+# 默认生成配置（在代码中设置）
+auto_save: true           # 是否自动保存报告
+format: "markdown"        # 输出格式（目前仅支持markdown）
+data_source_config: "data_sources.yaml"  # 数据源配置文件路径
 ```
 
-### 数据源配置 (data_sources.yaml)
-```yaml
-# 数据源配置
-fetch_config:
-  cache_dir: "./cache"
-  cache_ttl_minutes: 120
-  request_timeout: 10
-  max_concurrent: 3
-  user_agent: "AI-Daily-Brief/2.0 (Enhanced)"
+**主要配置项**：
+- **auto_save**: 生成后自动保存简报到 `reports/` 目录
+- **format**: 输出格式（目前固定为Markdown）
+- **data_source_config**: 数据源配置文件路径，可自定义数据源
 
-# RSS数据源配置
+### 数据源配置 (data_sources.yaml)
+数据源配置是项目的核心，支持多种类型的新闻源。以下是简化示例：
+```yaml
+# AI新闻数据源配置
+# 包含8个主要AI新闻RSS源，支持中英文内容
+
+# RSS数据源配置（优化版 - 使用可靠来源）
 rss_sources:
-  - name: "IT之家 AI新闻"
-    url: "https://www.ithome.com/rss/"
+  # 36氪 - AI/科技新闻（国内可靠来源）
+  - name: "36氪 AI科技"
+    url: "https://www.36kr.com/feed"
     language: "zh"
     category: "industry"
     enabled: true
     priority: 1
+    num_items: 10
+    filters:
+      include_keywords: ["AI", "人工智能", "OpenAI", "模型", "芯片", "GPT", "Claude"]
     
-  - name: "Apple机器学习研究"
-    url: "https://machinelearning.apple.com/rss/research.xml"
-    language: "en"
-    category: "research"
-    enabled: true
-    priority: 2
-    
-  - name: "OpenAI官方博客"
-    url: "https://openai.com/blog/rss/"
-    language: "en"
-    category: "product"
-    enabled: true
-    priority: 1
-
-  - name: "TechCrunch AI"
-    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
-    language: "en"
-    category: "industry"
-    enabled: true
-    priority: 2
-
+  # MIT Technology Review - AI专题
   - name: "MIT Technology Review AI"
     url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/"
     language: "en"
     category: "research"
     enabled: true
-    priority: 2
-
-# API数据源配置
-api_sources:
-  - name: "GitHub Releases"
-    type: "github"
-    url: "https://api.github.com/repos/{owner}/{repo}/releases"
+    priority: 1
+    num_items: 8
+    
+  # TechCrunch AI（可靠的技术新闻）
+  - name: "TechCrunch AI"
+    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+    language: "en"
+    category: "industry"
     enabled: true
-    priority: 3
-    params:
-      owner: "openai"
-      repo: "openai-python"
+    priority: 1
+    num_items: 8
 
-# 分类映射配置
+# 数据获取配置
+fetch_config:
+  max_items_per_source: 15
+  timeout_seconds: 30
+  user_agent: "AI-Daily-Brief/2.0"
+  
+  # 缓存配置 - 已禁用，确保每次都取最新数据
+  cache_enabled: false
+  
+  # 重试配置
+  max_retries: 2
+  retry_delay_seconds: 2
+  
+  # 内容过滤
+  min_content_length: 30
+  max_content_length: 500
+  exclude_keywords:
+    - "sponsored"
+    - "advertisement"
+    - "广告"
+  
+  # 时间范围 (小时)
+  max_age_hours: 72  # 3天内的新闻
+
+# 分类映射配置（基于用户提供的分类）
 category_mapping:
-  model_update:
-    keywords: ["gpt", "claude", "模型", "model", "参数", "参数规模"]
-  product_update:
-    keywords: ["工具", "产品", "应用", "platform", "应用", "plugin", "integration"]
-  research_breakthrough:
-    keywords: ["研究", "论文", "academic", "research", "paper", "arxiv", "学术"]
-  industry_dynamics:
-    keywords: ["行业", "融资", "ipo", "估值", "竞争", "industry", "funding", "market"]
-  tips_and_insights:
-    keywords: ["技巧", "观点", "tutorial", "insight", "guide", "best practice"]
+  keywords_to_categories:
+    - keywords: ["模型", "model", "gpt", "claude", "llama", "gemini", "参数"]
+      category: "模型发布/更新"
+      
+    - keywords: ["产品", "product", "工具", "tool", "平台", "开源"]
+      category: "产品发布/更新"
+      
+    - keywords: ["行业", "industry", "动态", "ipo", "估值", "融资"]
+      category: "行业动态"
+      
+    - keywords: ["研究", "research", "论文", "paper", "学术"]
+      category: "论文研究"
 ```
 
 ## 📊 输出示例
