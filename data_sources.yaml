@@ -180,12 +180,8 @@ fetch_config:
   max_items_per_source: 15
   timeout_seconds: 30
   user_agent: "AI-Daily-Brief/2.0 (+https://github.com/ai-daily-brief)"
-  
-  # 缓存配置 - 已禁用，确保每次都取最新数据
-  cache_enabled: false
-  cache_ttl_minutes: 0  # 无缓存
-  cache_dir: "./cache"
-  
+
+
   # 重试配置
   max_retries: 2
   retry_delay_seconds: 2

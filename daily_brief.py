@@ -165,14 +165,8 @@ class EnhancedAIBrief:
             else:
                 print(f"⚠️ 获取真实数据失败: {real_news_result.get('error', '未知错误')}")
         
-        # 分类统计
-        categories = {}
-        for item in all_items:
-            category = item.get("category", "其他")
-            categories[category] = categories.get(category, 0) + 1
-        
         # 生成报告
-        report = self.generate_report(all_items, categories, real_items_count)
+        report = self.generate_report(all_items, {}, real_items_count)
         
         # 保存报告
         filepath = None
@@ -183,49 +177,32 @@ class EnhancedAIBrief:
             "success": True,
             "total_items": len(all_items),
             "real_items": real_items_count,
-            "categories": categories,
             "report": report,
             "filepath": filepath
         }
     
-    def generate_report(self, items: List[Dict[str, Any]], categories: Dict[str, int], 
-                       real_items: int) -> str:
-        """生成简报报告"""
+    def generate_report(self, items: List[Dict[str, Any]], _categories: Dict[str, int],
+                       _real_items: int) -> str:
+        """生成简报报告（简化版：移除摘要、分类、数据来源）"""
         today = datetime.now().strftime("%Y-%m-%d")
-        
+
         report_lines = [
             f"# {today} AI每日简报",
             "",
-            "## 📊 简报摘要",
-            "",
-            f"- **总条目数**: {len(items)} 条",
-            f"- **数据来源**: 真实新闻渠道",
-            f"- **生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-            "",
-            "## 🏷️ 内容分类",
-            ""
-        ]
-        
-        # 添加分类
-        for category, count in categories.items():
-            report_lines.append(f"- **{category}**: {count} 条")
-        
-        report_lines.extend([
-            "",
             "## 📰 今日AI热点",
             ""
-        ])
-        
+        ]
+
         # 添加新闻条目
         for i, item in enumerate(items, 1):
             source_marker = "🔗" if item.get("link") else "📄"
             source_text = f"*来源: {item.get('source', '未知来源')}*"
             if item.get("link"):
                 source_text += f"  [阅读原文]({item['link']})"
-            
+
             # 获取内容，如果不存在则使用标题
             content = item.get('content', item.get('title', '无内容'))
-            
+
             report_lines.extend([
                 f"### {i}. {source_marker} {item.get('title', '未命名条目')}",
                 content,
@@ -233,30 +210,14 @@ class EnhancedAIBrief:
                 source_text,
                 ""
             ])
-        
-        # 添加趋势分析（基于采集到的真实数据）
-        report_lines.extend([
-            "",
-            "## 🔗 数据来源",
-            ""
-        ])
-        
-        # 添加数据来源
-        sources = set()
-        for item in items:
-            sources.add(item.get("source", "未知来源"))
-        
-        if sources:
-            for source in sources:
-                report_lines.append(f"- {source}")
-        
+
         report_lines.extend([
             "",
             "---",
             f"*生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*",
             "*注：所有内容均来自真实新闻渠道，不包含任何生成内容*"
         ])
-        
+
         return "\n".join(report_lines)
     
     def save_report(self, report: str) -> str:
@@ -330,12 +291,6 @@ def main():
         print(f"  总条目数: {result.get('total_items', 0)} 条")
         print(f"  新闻来源: {result.get('real_items', 0)} 条")
         
-        # 显示分类信息
-        categories = result.get("categories", {})
-        if categories:
-            print(f"\n🏷️ 内容分类:")
-            for category, count in categories.items():
-                print(f"  - {category}: {count} 条")
         
         # 显示文件路径
         filepath = result.get("filepath", "")

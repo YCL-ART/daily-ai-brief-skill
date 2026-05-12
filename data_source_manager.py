@@ -30,15 +30,7 @@ class DataSourceManager:
         
         self.config = self.load_config(config_path)
         
-        # 强制禁用缓存，确保每次都取最新数据
-        if "fetch_config" not in self.config:
-            self.config["fetch_config"] = {}
-        self.config["fetch_config"]["cache_enabled"] = False
-        
-        # 初始化缓存目录（但禁用缓存）
-        self.cache_dir = self.config.get("fetch_config", {}).get("cache_dir", "./cache")
-        os.makedirs(self.cache_dir, exist_ok=True)
-        
+
         # 初始化HTTP会话
         self.session = requests.Session()
         user_agent = self.config.get("fetch_config", {}).get("user_agent", 
@@ -63,41 +55,8 @@ class DataSourceManager:
         """生成缓存键"""
         cache_key = f"{source_name}_{source_url}"
         return hashlib.md5(cache_key.encode()).hexdigest()
-    
-    def get_cached_data(self, cache_key: str) -> Optional[List[Dict]]:
-        """获取缓存数据"""
-        if not self.config.get("fetch_config", {}).get("cache_enabled", True):
-            return None
-        
-        cache_file = os.path.join(self.cache_dir, f"{cache_key}.json")
-        
-        if not os.path.exists(cache_file):
-            return None
-        
-        # 检查缓存是否过期
-        cache_ttl = self.config.get("fetch_config", {}).get("cache_ttl_minutes", 60)
-        file_mtime = os.path.getmtime(cache_file)
-        if time.time() - file_mtime > cache_ttl * 60:
-            return None
-        
-        try:
-            with open(cache_file, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
-            return None
-    
-    def save_to_cache(self, cache_key: str, data: List[Dict]):
-        """保存数据到缓存"""
-        if not self.config.get("fetch_config", {}).get("cache_enabled", True):
-            return
-        
-        cache_file = os.path.join(self.cache_dir, f"{cache_key}.json")
-        
-        try:
-            with open(cache_file, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            print(f"⚠️ 缓存保存失败: {e}")
+
+
     
     def fetch_rss_source(self, source_config: Dict) -> List[Dict]:
         """获取RSS源数据（增强版，带重试和容错机制）"""

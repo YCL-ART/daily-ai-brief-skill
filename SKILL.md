@@ -8,7 +8,7 @@
 ### 真实数据源集成
 - **RSS数据源**: 从多个AI新闻网站获取真实新闻
 - **API数据源**: 支持GitHub Releases等API
-- **智能分类**: 基于关键词自动分类（模型更新、产品发布、行业动态等）
+- **智能分类**: 基于关键词自动分类（内部处理，不在报告中显示）
 - **内容过滤**: 自动过滤广告和低质量内容
 
 ### 混合生成模式
@@ -116,7 +116,7 @@ if brief_result["status"] == "success":
 - **错误处理**: 完善的错误处理和重试机制
 
 ### 智能内容处理系统
-- **自动分类系统**: 基于关键词的智能分类
+- **自动分类系统**: 基于关键词的智能分类（内部处理，不在报告中显示）
   - 模型发布/更新: GPT、Claude、模型、参数等关键词
   - 产品发布/更新: 工具、平台、开源、版本等关键词
   - 行业动态: IPO、估值、融资、竞争等关键词
@@ -189,20 +189,14 @@ result = brief.generate_daily_brief()
 ```
 🎯 AI每日简报生成成功！
 📊 统计信息:
-  总条目: 8
-  真实新闻: 5
-  生成内容: 3
+  总条目数: 8 条
+  新闻来源: 8 条
   保存位置: ./reports/今日AI简报_2026-05-12.md
 
 📰 今日AI热点:
 1. 🤖 OpenAI发布GPT-4.5新版本
 2. 🔬 Google AI在医疗影像诊断取得突破
 3. 🛠️ Anthropic开源金融AI全栈模板
-
-📈 趋势分析:
-• 大模型持续优化
-• 应用场景扩展
-• 开源生态活跃
 ```
 
 ### OpenClaw友好格式
@@ -212,16 +206,9 @@ result = brief.generate_daily_brief()
   "timestamp": "2026-05-12 14:30:00",
   "data": {
     "total_items": 8,
-    "real_items": 5,
-    "generated_items": 3,
-    "categories": {
-      "model_update": 3,
-      "product_update": 2,
-      "industry_dynamics": 2,
-      "research": 1
-    },
+    "real_items": 8,
     "filepath": "./reports/今日AI简报_2026-05-12.md",
-    "summary": "📰 AI每日简报摘要..."
+    "summary": "📰 AI每日简报生成成功"
   }
 }
 ```

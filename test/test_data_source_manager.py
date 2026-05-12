@@ -86,22 +86,6 @@ def test_ai_news_summary():
         print(f"❌ AI新闻摘要测试失败: {e}")
         return False
 
-def test_cache_disabled():
-    """测试缓存是否已禁用"""
-    print("\n🧪 测试缓存是否已禁用...")
-    try:
-        manager = DataSourceManager()
-        cache_enabled = manager.config.get("fetch_config", {}).get("cache_enabled", True)
-        
-        if not cache_enabled:
-            print("✅ 缓存已禁用，确保每次取最新数据")
-            return True
-        else:
-            print("❌ 缓存未禁用")
-            return False
-    except Exception as e:
-        print(f"❌ 缓存测试失败: {e}")
-        return False
 
 def run_all_tests():
     """运行所有测试"""
@@ -112,7 +96,6 @@ def run_all_tests():
     
     # 运行测试
     test_results.append(("数据源初始化", test_data_source_initialization()))
-    test_results.append(("缓存禁用测试", test_cache_disabled()))
     test_results.append(("RSS源测试", test_rss_sources()))
     test_results.append(("AI新闻摘要测试", test_ai_news_summary()))
     
