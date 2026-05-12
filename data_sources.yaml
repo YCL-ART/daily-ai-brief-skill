@@ -1,0 +1,288 @@
+# AI新闻数据源配置（优化版）
+# 基于实际AI新闻渠道配置
+
+# RSS数据源配置
+rss_sources:
+  # IT之家 - AI相关新闻
+  - name: "IT之家 AI新闻"
+    url: "https://www.ithome.com/rss/"
+    language: "zh"
+    category: "industry"
+    enabled: true
+    priority: 1
+    filters:
+      include_keywords: ["AI", "人工智能", "OpenAI", "模型", "芯片"]
+    
+  # Apple机器学习研究
+  - name: "Apple机器学习研究"
+    url: "https://machinelearning.apple.com/rss/research.xml"
+    language: "en"
+    category: "research"
+    enabled: true
+    priority: 2
+    
+  # Anthropic Claude Code Releases
+  - name: "Claude Code Releases"
+    url: "https://github.com/anthropics/claude-code/releases.atom"
+    language: "en"
+    category: "product"
+    enabled: true
+    priority: 1
+    
+  # OpenAI官方博客
+  - name: "OpenAI官方博客"
+    url: "https://openai.com/blog/rss/"
+    language: "en"
+    category: "product"
+    enabled: true
+    priority: 1
+    filters:
+      exclude_keywords: ["customer", "case study", "企业案例"]
+    
+  # Simon Willison博客（AI技巧）
+  - name: "Simon Willison博客"
+    url: "https://simonwillison.net/atom/ai"
+    language: "en"
+    category: "tips"
+    enabled: true
+    priority: 3
+
+# X/Twitter数据源（通过Nitter或类似服务）
+x_sources:
+  - name: "SenseTime AI"
+    username: "SenseTime_AI"
+    language: "en"
+    category: "model"
+    enabled: true
+    priority: 1
+    
+  - name: "OpenRouter"
+    username: "OpenRouter"
+    language: "en"
+    category: "model"
+    enabled: true
+    priority: 1
+    
+  - name: "腾讯混元"
+    username: "TencentHunyuan"
+    language: "zh"
+    category: "model"
+    enabled: true
+    priority: 1
+    
+  - name: "Anthropic相关"
+    usernames: ["frxiaobei", "kimmonismus", "xiaohu"]
+    language: "en"
+    category: "product"
+    enabled: true
+    priority: 2
+    
+  - name: "Luma AI"
+    username: "LumaLabsAI"
+    language: "en"
+    category: "product"
+    enabled: true
+    priority: 2
+    
+  - name: "阿里云"
+    username: "alibaba_cloud"
+    language: "zh"
+    category: "product"
+    enabled: true
+    priority: 1
+    
+  - name: "AI行业观察"
+    usernames: ["AYi_AInotes", "MiniMax_AI"]
+    language: "zh"
+    category: "industry"
+    enabled: true
+    priority: 2
+    
+  - name: "AI研究"
+    usernames: ["berryxia", "MSFTResearch", "karpathy", "swyx", "vista8"]
+    language: "en"
+    category: "research"
+    enabled: true
+    priority: 3
+
+# 网页爬虫配置（针对特定网站）
+web_scrapers:
+  - name: "Claude官方博客"
+    url: "https://claude.com/blog"
+    selector: "article"
+    language: "en"
+    category: "product"
+    enabled: true
+    priority: 1
+    
+  - name: "开源PPT工具"
+    url: "https://github.com/op7418/guizang-ppt"
+    selector: ".markdown-body"
+    language: "zh"
+    category: "tool"
+    enabled: true
+    priority: 3
+
+# API数据源配置
+api_sources:
+  - name: "GitHub Releases API"
+    type: "github"
+    endpoint: "https://api.github.com/repos/{owner}/{repo}/releases"
+    params:
+      per_page: 10
+    enabled: true
+    priority: 2
+    repositories:
+      - owner: "anthropics"
+        repo: "claude-code"
+      - owner: "op7418"
+        repo: "guizang-ppt"
+
+# 数据获取配置
+fetch_config:
+  # 通用配置
+  max_items_per_source: 15
+  timeout_seconds: 30
+  user_agent: "AI-Daily-Brief/2.0 (+https://github.com/ai-daily-brief)"
+  
+  # 缓存配置
+  cache_enabled: true
+  cache_ttl_minutes: 120  # 2小时缓存
+  cache_dir: "./cache"
+  
+  # 重试配置
+  max_retries: 3
+  retry_delay_seconds: 2
+  
+  # 内容过滤
+  min_content_length: 30
+  max_content_length: 500
+  exclude_keywords:
+    - "sponsored"
+    - "advertisement"
+    - "click here"
+    - "buy now"
+    - "广告"
+    - "推广"
+  
+  # 语言配置
+  preferred_languages:
+    - "zh"
+    - "en"
+  
+  # 时间范围 (小时)
+  max_age_hours: 72  # 3天内的新闻
+
+# 分类映射配置（基于用户提供的分类）
+category_mapping:
+  # 关键词到分类的映射
+  keywords_to_categories:
+    - keywords: ["模型", "model", "gpt", "claude", "llama", "gemini", "参数", "SenseNova", "混元", "Ring"]
+      category: "模型发布/更新"
+      
+    - keywords: ["产品", "product", "工具", "tool", "平台", "platform", "开源", "open source", "Claude Code", "Agent", "视频引擎"]
+      category: "产品发布/更新"
+      
+    - keywords: ["行业", "industry", "动态", "ipo", "估值", "融资", "竞争", "基础设施", "会议", "团队"]
+      category: "行业动态"
+      
+    - keywords: ["研究", "research", "论文", "paper", "学术", "academic", "框架", "强化学习", "MLLM", "描述"]
+      category: "论文研究"
+      
+    - keywords: ["技巧", "tip", "观点", "view", "教程", "tutorial", "交互", "界面", "shebang", "知识产权"]
+      category: "技巧与观点"
+      
+    - keywords: ["芯片", "硬件", "cerebras", "gpu", "tpu", "处理器"]
+      category: "硬件动态"
+
+# 数据源优先级配置
+source_priority:
+  # 按类型优先级
+  type_priority:
+    - "rss"      # RSS源最可靠
+    - "api"      # API次之
+    - "web"      # 网页爬虫最后
+  
+  # 按可信度权重
+  credibility_weights:
+    "official": 1.0      # 官方渠道
+    "tech_media": 0.8    # 技术媒体
+    "social_media": 0.6  # 社交媒体
+    "personal_blog": 0.5 # 个人博客
+  
+  # 渠道可信度映射
+  channel_credibility:
+    "openai.com": "official"
+    "anthropic.com": "official"
+    "claude.com": "official"
+    "apple.com": "official"
+    "ithome.com": "tech_media"
+    "github.com": "tech_media"
+    "simonwillison.net": "personal_blog"
+    "x.com": "social_media"
+    "twitter.com": "social_media"
+
+# 备用内容生成配置
+fallback_generation:
+  enabled: true
+  min_required_items: 5
+  use_partial_data: true
+  
+  # 生成内容模板
+  templates:
+    model_update:
+      title_patterns:
+        - "{company}发布{model}新版本"
+        - "{model}在{domain}领域取得突破"
+      description_patterns:
+        - "{company}宣布推出{model}的最新版本，性能提升显著。"
+        - "研究人员在{domain}领域使用{model}取得新进展。"
+    
+    product_release:
+      title_patterns:
+        - "{company}开源{product}模板"
+        - "新AI工具：{product}正式发布"
+      description_patterns:
+        - "{company}发布了{product}，专注于{function}。"
+        - "基于{technology}的新工具{product}上线，支持多种任务。"
+    
+    industry_trend:
+      title_patterns:
+        - "{company}估值激增{amount}"
+        - "{industry}领域迎来新竞争"
+      description_patterns:
+        - "{company}在近期融资中估值大幅上升，显示市场对{technology}的看好。"
+        - "{industry}领域出现新的竞争者，推动行业创新发展。"
+
+# 数据验证配置
+data_validation:
+  enabled: true
+  
+  # 必填字段验证
+  required_fields:
+    - "title"
+    - "source"
+    - "category"
+  
+  # 字段长度验证
+  field_length_limits:
+    title:
+      min: 5
+      max: 200
+    description:
+      min: 20
+      max: 1000
+  
+  # 链接验证
+  validate_links: true
+  allowed_domains:
+    - "openai.com"
+    - "anthropic.com"
+    - "claude.com"
+    - "apple.com"
+    - "ithome.com"
+    - "github.com"
+    - "simonwillison.net"
+    - "x.com"
+    - "twitter.com"
+    - "machinelearning.apple.com"

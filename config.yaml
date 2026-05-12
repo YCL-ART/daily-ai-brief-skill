@@ -1,4 +1,4 @@
-# AI每日简报配置（简化版）
+# AI每日简报配置（增强版 - 支持真实数据源）
 
 # 简报生成选项
 generation:
@@ -10,6 +10,12 @@ generation:
   
   # 输出格式
   format: "markdown"
+  
+  # 数据源配置（增强版功能）
+  use_real_data: true        # 是否使用真实数据源
+  min_real_items: 3          # 最少需要的真实数据项数
+  fallback_enabled: true     # 是否启用备用内容生成
+  data_source_config: "data_sources.yaml"  # 数据源配置文件路径
 
 # AI相关主题
 topics:
