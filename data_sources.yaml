@@ -7,7 +7,6 @@ rss_sources:
   - name: "36氪 AI科技"
     url: "https://www.36kr.com/feed"
     language: "zh"
-    category: "industry"
     enabled: true
     priority: 1
     num_items: 10  # 该渠道默认采集条数
@@ -18,7 +17,6 @@ rss_sources:
   - name: "MIT Technology Review AI"
     url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/"
     language: "en"
-    category: "research"
     enabled: true
     priority: 1
     num_items: 8  # 该渠道默认采集条数
@@ -27,7 +25,6 @@ rss_sources:
   - name: "TechCrunch AI"
     url: "https://techcrunch.com/category/artificial-intelligence/feed/"
     language: "en"
-    category: "industry"
     enabled: true
     priority: 1
     num_items: 8  # 该渠道默认采集条数
@@ -36,7 +33,6 @@ rss_sources:
   - name: "The Verge AI"
     url: "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml"
     language: "en"
-    category: "industry"
     enabled: true
     priority: 2
     num_items: 6  # 该渠道默认采集条数
@@ -45,7 +41,6 @@ rss_sources:
   - name: "Ars Technica AI"
     url: "https://arstechnica.com/tag/artificial-intelligence/feed/"
     language: "en"
-    category: "research"
     enabled: true
     priority: 2
     num_items: 6  # 该渠道默认采集条数
@@ -54,7 +49,6 @@ rss_sources:
   - name: "机器之心 AI新闻"
     url: "https://www.jiqizhixin.com/rss"
     language: "zh"
-    category: "industry"
     enabled: true
     priority: 1
     num_items: 8  # 该渠道默认采集条数
@@ -63,7 +57,6 @@ rss_sources:
   - name: "AI Weekly"
     url: "https://aiweekly.co/rss.xml"
     language: "en"
-    category: "industry"
     enabled: true
     priority: 2
     num_items: 5  # 该渠道默认采集条数
@@ -72,7 +65,6 @@ rss_sources:
   - name: "Google AI Blog"
     url: "https://ai.googleblog.com/feeds/posts/default"
     language: "en"
-    category: "research"
     enabled: true
     priority: 1
     num_items: 5  # 该渠道默认采集条数
@@ -82,7 +74,6 @@ x_sources:
   - name: "SenseTime AI"
     username: "SenseTime_AI"
     language: "en"
-    category: "model"
     enabled: true
     priority: 1
     num_items: 5  # 该渠道默认采集条数
@@ -90,7 +81,6 @@ x_sources:
   - name: "OpenRouter"
     username: "OpenRouter"
     language: "en"
-    category: "model"
     enabled: true
     priority: 1
     num_items: 5  # 该渠道默认采集条数
@@ -98,7 +88,6 @@ x_sources:
   - name: "腾讯混元"
     username: "TencentHunyuan"
     language: "zh"
-    category: "model"
     enabled: true
     priority: 1
     num_items: 5  # 该渠道默认采集条数
@@ -106,7 +95,6 @@ x_sources:
   - name: "Anthropic相关"
     usernames: ["frxiaobei", "kimmonismus", "xiaohu"]
     language: "en"
-    category: "product"
     enabled: true
     priority: 2
     num_items: 5  # 该渠道默认采集条数
@@ -114,7 +102,6 @@ x_sources:
   - name: "Luma AI"
     username: "LumaLabsAI"
     language: "en"
-    category: "product"
     enabled: true
     priority: 2
     num_items: 5  # 该渠道默认采集条数
@@ -122,7 +109,6 @@ x_sources:
   - name: "阿里云"
     username: "alibaba_cloud"
     language: "zh"
-    category: "product"
     enabled: true
     priority: 1
     num_items: 5  # 该渠道默认采集条数
@@ -130,7 +116,6 @@ x_sources:
   - name: "AI行业观察"
     usernames: ["AYi_AInotes", "MiniMax_AI"]
     language: "zh"
-    category: "industry"
     enabled: true
     priority: 2
     num_items: 5  # 该渠道默认采集条数
@@ -138,7 +123,6 @@ x_sources:
   - name: "AI研究"
     usernames: ["berryxia", "MSFTResearch", "karpathy", "swyx", "vista8"]
     language: "en"
-    category: "research"
     enabled: true
     priority: 3
     num_items: 5  # 该渠道默认采集条数
@@ -149,7 +133,6 @@ web_scrapers:
     url: "https://claude.com/blog"
     selector: "article"
     language: "en"
-    category: "product"
     enabled: true
     priority: 1
     num_items: 5  # 该渠道默认采集条数
@@ -158,7 +141,6 @@ web_scrapers:
     url: "https://github.com/op7418/guizang-ppt"
     selector: ".markdown-body"
     language: "zh"
-    category: "tool"
     enabled: true
     priority: 3
     num_items: 5  # 该渠道默认采集条数
@@ -205,28 +187,6 @@ fetch_config:
   # 时间范围 (小时)
   max_age_hours: 72  # 3天内的新闻
 
-# 分类映射配置（基于用户提供的分类）
-category_mapping:
-  # 关键词到分类的映射
-  keywords_to_categories:
-    - keywords: ["模型", "model", "gpt", "claude", "llama", "gemini", "参数", "SenseNova", "混元", "Ring"]
-      category: "模型发布/更新"
-      
-    - keywords: ["产品", "product", "工具", "tool", "平台", "platform", "开源", "open source", "Claude Code", "Agent", "视频引擎"]
-      category: "产品发布/更新"
-      
-    - keywords: ["行业", "industry", "动态", "ipo", "估值", "融资", "竞争", "基础设施", "会议", "团队"]
-      category: "行业动态"
-      
-    - keywords: ["研究", "research", "论文", "paper", "学术", "academic", "框架", "强化学习", "MLLM", "描述"]
-      category: "论文研究"
-      
-    - keywords: ["技巧", "tip", "观点", "view", "教程", "tutorial", "交互", "界面", "shebang", "知识产权"]
-      category: "技巧与观点"
-      
-    - keywords: ["芯片", "硬件", "cerebras", "gpu", "tpu", "处理器"]
-      category: "硬件动态"
-
 # 数据源优先级配置
 source_priority:
   # 按类型优先级
@@ -264,7 +224,6 @@ data_validation:
   required_fields:
     - "title"
     - "source"
-    - "category"
   
   # 字段长度验证
   field_length_limits:

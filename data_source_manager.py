@@ -13,7 +13,7 @@ import hashlib
 import feedparser
 import requests
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 import random
 from urllib.parse import urlparse
 
@@ -63,7 +63,6 @@ class DataSourceManager:
         source_name = source_config.get("name", "未知源")
         source_url = source_config.get("url", "")
         language = source_config.get("language", "en")
-        category = source_config.get("category", "industry")
         
         if not source_url:
             print(f"⚠️ 渠道 {source_name} URL为空，跳过")
@@ -161,17 +160,13 @@ class DataSourceManager:
                         if len(content) < min_length or len(content) > max_length:
                             continue
                         
-                        # 确定分类
-                        item_category = self.determine_category(title + " " + description, category)
-                        
                         items.append({
                             "title": title,
-                            "description": description[:800],  # 增加描述长度限制
+                            "description": description[:800],
                             "link": link,
                             "published": published.isoformat(),
                             "source": source_name,
                             "language": language,
-                            "category": item_category,
                             "type": "rss"
                         })
                         items_collected += 1
@@ -239,8 +234,7 @@ class DataSourceManager:
         rss_config = {
             "name": source_config.get("name"),
             "url": rss_url,
-            "language": params.get("hl", "en"),
-            "category": "industry"
+            "language": params.get("hl", "en")
         }
         
         return self.fetch_rss_source(rss_config)
@@ -278,7 +272,6 @@ class DataSourceManager:
                             "published": article.get("publishedAt", datetime.now().isoformat()),
                             "source": article.get("source", {}).get("name", "未知"),
                             "language": "en",
-                            "category": self.determine_category(article.get("title", "")),
                             "type": "api"
                         })
                 
@@ -303,22 +296,6 @@ class DataSourceManager:
                 return True
         
         return False
-    
-    def determine_category(self, text: str, default_category: str = "industry") -> str:
-        """根据文本内容确定分类"""
-        text_lower = text.lower()
-        
-        category_mapping = self.config.get("category_mapping", {}).get("keywords_to_categories", [])
-        
-        for mapping in category_mapping:
-            keywords = mapping.get("keywords", [])
-            category = mapping.get("category", "")
-            
-            for keyword in keywords:
-                if keyword.lower() in text_lower:
-                    return category
-        
-        return default_category
     
     def fetch_all_sources(self) -> List[Dict]:
         """从所有启用的数据源获取数据（增强版，带进度报告和容错）"""
@@ -403,13 +380,11 @@ class DataSourceManager:
         print(f"   🎯 唯一数据: {len(unique_items)} 条")
         
         if unique_items:
-            # 显示一些示例数据
             print(f"\n📰 示例数据 (前3条):")
             for i, item in enumerate(unique_items[:3], 1):
                 title = item.get("title", "无标题")
                 source = item.get("source", "未知来源")
-                category = item.get("category", "未知分类")
-                print(f"   {i}. [{source}] {title[:60]}... ({category})")
+                print(f"   {i}. [{source}] {title[:60]}...")
         
         return unique_items
     
@@ -421,10 +396,9 @@ class DataSourceManager:
         if not all_items:
             print("📭 所有渠道均未采集到数据")
             return {
-                "success": True,  # 仍然返回成功，表示采集过程正常
+                "success": True,
                 "items": [],
                 "total": 0,
-                "categories": {},
                 "timestamp": datetime.now().isoformat()
             }
         
@@ -439,22 +413,12 @@ class DataSourceManager:
         # 限制总条数，但不超过实际采集到的条数
         max_items = min(total_max_items, len(all_items))
         
-        # 按类别统计
-        categories = {}
-        for item in all_items[:max_items]:
-            category = item.get("category", "其他")
-            if category not in categories:
-                categories[category] = 0
-            categories[category] += 1
-        
-        # 选择最重要的新闻
         selected_items = all_items[:max_items]
         
         return {
             "success": True,
             "items": selected_items,
             "total": len(selected_items),
-            "categories": categories,
             "timestamp": datetime.now().isoformat()
         }
 
@@ -469,12 +433,10 @@ def test_data_sources():
     
     if summary["success"]:
         print(f"✅ 成功获取 {summary['total']} 条新闻")
-        print(f"📊 分类统计: {summary['categories']}")
         
         for i, item in enumerate(summary["items"], 1):
             print(f"\n{i}. {item['title']}")
             print(f"   来源: {item['source']}")
-            print(f"   分类: {item['category']}")
             print(f"   时间: {item['published']}")
     else:
         print(f"❌ 获取失败: {summary['error']}")

@@ -115,7 +115,7 @@ class EnhancedAIBrief:
                 print(f"⚠️ 获取真实数据失败: {real_news_result.get('error', '未知错误')}")
         
         # 生成报告
-        report = self.generate_report(all_items, {}, real_items_count)
+        report = self.generate_report(all_items, real_items_count)
         
         # 保存报告
         filepath = None
@@ -130,7 +130,7 @@ class EnhancedAIBrief:
             "filepath": filepath
         }
     
-    def generate_report(self, items: List[Dict[str, Any]], _categories: Dict[str, int],
+    def generate_report(self, items: List[Dict[str, Any]],
                        _real_items: int) -> str:
         """生成简报报告"""
         today = datetime.now().strftime("%Y-%m-%d")

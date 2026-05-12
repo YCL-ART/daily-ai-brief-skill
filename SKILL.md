@@ -20,7 +20,7 @@
 ### 简洁报告生成
 - **纯真实数据**: 100%真实新闻，零生成内容
 - **透明标注**: 每条新闻清晰标注来源和原文链接
-- **极简格式**: 移除摘要、分类等冗余信息，专注新闻本身
+- **极简格式**: 移除摘要等冗余信息，专注新闻本身
 - **自动保存**: 每日简报自动保存为Markdown文件
 
 ### 多平台适配
@@ -94,7 +94,6 @@ def generate_ai_daily_brief():
                 "total_items": result.get('total_items', 0),
                 "real_items": result.get('real_items', 0),
                 "generated_items": result.get('generated_items', 0),
-                "categories": result.get("categories", {}),
                 "filepath": result.get('filepath', '未知'),
                 "report_preview": brief.get_summary(result)[:200] + "..." if len(brief.get_summary(result)) > 200 else brief.get_summary(result)
             }
@@ -123,13 +122,6 @@ if brief_result["status"] == "success":
 - **错误处理**: 完善的错误处理和重试机制
 
 ### 智能内容处理系统
-- **自动分类系统**: 基于关键词的智能分类（内部处理，不在报告中显示）
-  - 模型发布/更新: GPT、Claude、模型、参数等关键词
-  - 产品发布/更新: 工具、平台、开源、版本等关键词
-  - 行业动态: IPO、估值、融资、竞争等关键词
-  - 论文研究: 研究、论文、学术、框架等关键词
-  - 技巧与观点: 技巧、观点、教程、交互等关键词
-
 - **内容过滤系统**:
   - 广告内容自动识别和过滤
   - 低质量内容筛选
@@ -233,27 +225,6 @@ result = brief.generate_daily_brief()
 ### OpenClaw定时任务
 在OpenClaw中设置定时任务调用简报生成API。
 
-## 测试验证
-
-### 运行测试
-```bash
-# 运行完整测试套件
-python test/run_all_tests.py
-
-# 运行单元测试
-python test/test_data_sources.py
-
-# 运行功能演示
-python test/demo_enhanced_features.py
-```
-
-### 测试覆盖率
-- ✅ 数据源管理测试
-- ✅ 分类系统测试
-- ✅ 内容过滤测试
-- ✅ 集成功能测试
-- ✅ 平台兼容测试
-
 ## 故障排除
 
 ### 常见问题
@@ -285,10 +256,6 @@ python -c "from data_source_manager import DataSourceManager; m = DataSourceMana
 ### 添加新的数据源
 1. 在 `data_sources.yaml` 中添加新的数据源配置
 2. 测试数据获取功能
-3. 更新分类关键词映射
-
-### 自定义分类规则
-编辑 `data_sources.yaml` 中的 `category_mapping` 部分，添加自定义关键词映射。
 
 ### 集成到其他系统
 ```python

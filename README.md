@@ -13,7 +13,7 @@
 - **中英文支持**: 同时采集中文和英文AI新闻内容
 
 ### 🎯 极简报告生成
-- **专注核心内容**: 移除摘要、分类等冗余信息，直接呈现新闻
+- **专注核心内容**: 移除摘要等冗余信息，直接呈现新闻
 - **透明来源标注**: 每条新闻清晰标注来源和原文链接
 - **自动格式优化**: 智能排版，生成易读的Markdown格式
 - **每日自动保存**: 简报自动保存为时间戳命名的文件
@@ -101,7 +101,6 @@ rss_sources:
   - name: "36氪 AI科技"
     url: "https://www.36kr.com/feed"
     language: "zh"
-    category: "industry"
     enabled: true
     priority: 1
     num_items: 10
@@ -112,7 +111,6 @@ rss_sources:
   - name: "MIT Technology Review AI"
     url: "https://www.technologyreview.com/topic/artificial-intelligence/feed/"
     language: "en"
-    category: "research"
     enabled: true
     priority: 1
     num_items: 8
@@ -121,7 +119,6 @@ rss_sources:
   - name: "TechCrunch AI"
     url: "https://techcrunch.com/category/artificial-intelligence/feed/"
     language: "en"
-    category: "industry"
     enabled: true
     priority: 1
     num_items: 8
@@ -149,21 +146,6 @@ fetch_config:
   
   # 时间范围 (小时)
   max_age_hours: 72  # 3天内的新闻
-
-# 分类映射配置（基于用户提供的分类）
-category_mapping:
-  keywords_to_categories:
-    - keywords: ["模型", "model", "gpt", "claude", "llama", "gemini", "参数"]
-      category: "模型发布/更新"
-      
-    - keywords: ["产品", "product", "工具", "tool", "平台", "开源"]
-      category: "产品发布/更新"
-      
-    - keywords: ["行业", "industry", "动态", "ipo", "估值", "融资"]
-      category: "行业动态"
-      
-    - keywords: ["研究", "research", "论文", "paper", "学术"]
-      category: "论文研究"
 ```
 
 ## 📊 输出示例
@@ -224,10 +206,7 @@ daily-ai-brief-skill/
 ├── SKILL.md                # 技能说明文件
 │
 ├── test/                   # 测试目录
-│   ├── test_data_sources.py        # 数据源测试
-│   ├── test_channel_sources.py     # 渠道测试
-│   ├── demo_enhanced_features.py   # 功能演示
-│   └── run_all_tests.py           # 完整测试套件
+│   
 │
 ├── reports/                # 生成的简报文件目录
 │   └── 今日AI简报_*.md     # 每日生成的简报
@@ -243,7 +222,6 @@ daily-ai-brief-skill/
 - **网页爬虫**: 支持从AI新闻网站获取内容
 
 ### 智能内容处理
-- **自动分类**: 基于关键词自动分类（内部处理，不在报告中显示）
 - **去重处理**: 自动去除重复新闻
 - **时间过滤**: 只保留48小时内的最新新闻
 - **内容过滤**: 智能过滤广告和低质量内容
@@ -266,27 +244,6 @@ daily-ai-brief-skill/
 
 ### Claude Code定时任务
 在Claude Code中设置定时任务，每天自动生成并推送AI简报。
-
-## 🧪 测试验证
-
-### 运行完整测试
-```bash
-# 运行所有测试
-python test/run_all_tests.py
-
-# 运行单元测试
-python test/test_data_sources.py
-
-# 运行功能演示
-python test/demo_enhanced_features.py
-```
-
-### 测试覆盖率
-- ✅ 数据源管理测试
-- ✅ 分类系统测试
-- ✅ 内容过滤测试
-- ✅ 集成功能测试
-- ✅ 平台兼容测试
 
 ## 🔍 故障排除
 
@@ -336,7 +293,6 @@ MIT License
 
 ### 功能建议
 - 添加新的数据源
-- 改进分类算法
 - 优化内容过滤
 - 增强平台集成
 
