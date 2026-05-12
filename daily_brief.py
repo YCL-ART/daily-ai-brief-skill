@@ -187,9 +187,9 @@ class EnhancedAIBrief:
         today = datetime.now().strftime("%Y-%m-%d")
 
         report_lines = [
-            f"# {today} AI每日简报",
+            f"# {today} 简报",
             "",
-            "## 📰 今日AI热点",
+            "## 📰 热点信息摘要",
             ""
         ]
 
@@ -214,8 +214,7 @@ class EnhancedAIBrief:
         report_lines.extend([
             "",
             "---",
-            f"*生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*",
-            "*注：所有内容均来自真实新闻渠道，不包含任何生成内容*"
+            f"*生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*"
         ])
 
         return "\n".join(report_lines)
@@ -223,7 +222,7 @@ class EnhancedAIBrief:
     def save_report(self, report: str) -> str:
         """保存报告到文件"""
         today = datetime.now().strftime("%Y-%m-%d")
-        filename = f"今日AI简报_{today}.md"
+        filename = f"简报_{today}.md"
         filepath = os.path.join(self.reports_dir, filename)
         
         try:
