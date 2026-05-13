@@ -80,14 +80,14 @@ async def main():
             print(f"  - {report_type}: {report_path}")
         print("=" * 60)
 
-        # 打印前5个热门新闻
-        print("\n🔥 今日热点（前5）:")
-        hot_items = sorted(items, key=lambda x: x.hotness_score, reverse=True)[:5]
-        for i, item in enumerate(hot_items, 1):
+        # 打印所有新闻
+        print(f"\n📰 所有新闻 ({len(items)} 条):")
+        for i, item in enumerate(items, 1):
             print(f"{i}. {item.title}")
-            print(f"   热度: {item.hotness_score:.1f} | 来源: {item.source}")
+            print(f"   热度: {item.hotness_score:.1f} | 来源: {item.source} | 时间: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
             print(f"   链接: {item.url}")
-            print()
+            if i < len(items):  # 不在最后一条后打印空行
+                print()
 
     except KeyboardInterrupt:
         logger.info("用户中断执行")

@@ -11,6 +11,7 @@ import time
 from .base_fetcher import BaseFetcher, NewsItem
 from .fetcher_factory import get_fetcher_factory
 from .config import get_config_loader
+from .hotness_evaluator import HotnessEvaluator
 
 
 class Orchestrator:
@@ -231,10 +232,18 @@ class Orchestrator:
         # 3. 过滤结果
         filtered_results = self.filter_results()
 
-        # 4. 排序结果
-        sorted_results = self.sort_results(filtered_results)
+        # 4. 评估热度
+        hotness_evaluator = HotnessEvaluator()
+        evaluated_results = hotness_evaluator.evaluate_all(filtered_results)
 
-        # 5. 输出统计信息
+        # 5. 排序结果（按热度降序）
+        sorted_results = sorted(
+            evaluated_results,
+            key=lambda x: x.hotness_score,
+            reverse=True
+        )
+
+        # 6. 输出统计信息
         stats = self.get_statistics()
         self.logger.info(f"抓取流程完成，最终结果: {len(sorted_results)} 个条目")
         self.logger.info(f"统计信息: {stats}")

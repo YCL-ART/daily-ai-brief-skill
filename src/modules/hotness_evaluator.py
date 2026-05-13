@@ -380,13 +380,13 @@ class HotnessEvaluator:
         else:
             return 0.0
 
-    def generate_hotness_report(self, items: List[NewsItem], top_n: int = 20) -> str:
+    def generate_hotness_report(self, items: List[NewsItem], top_n: int = None) -> str:
         """
         生成热度报告
 
         Args:
             items: 新闻条目列表
-            top_n: 显示前N个条目
+            top_n: 显示前N个条目，None表示显示所有
 
         Returns:
             报告文本
@@ -394,24 +394,35 @@ class HotnessEvaluator:
         if not items:
             return "没有找到新闻条目"
 
-        # 取前N个
-        top_items = items[:top_n]
+        # 如果top_n为None，显示所有新闻
+        if top_n is None:
+            display_items = items
+            display_count = len(items)
+        else:
+            display_items = items[:top_n]
+            display_count = len(display_items)
 
         report_lines = []
-        report_lines.append("# AI新闻热度报告")
+        report_lines.append("# AI新闻完整报告")
         report_lines.append(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         report_lines.append(f"总条目数: {len(items)}")
-        report_lines.append(f"显示前 {len(top_items)} 个热点")
+        if top_n is None:
+            report_lines.append("显示所有新闻条目")
+        else:
+            report_lines.append(f"显示前 {display_count} 个热点")
         report_lines.append("")
 
-        for i, item in enumerate(top_items, 1):
+        for i, item in enumerate(display_items, 1):
             report_lines.append(f"## {i}. {item.title}")
             report_lines.append(f"**热度**: {item.hotness_score:.1f}/10")
             report_lines.append(f"**来源**: {item.source} ({item.source_type})")
             report_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
             report_lines.append(f"**语言**: {item.language}")
             report_lines.append(f"**链接**: {item.url}")
-            report_lines.append(f"**摘要**: {item.summary[:200]}...")
+            if item.summary:
+                report_lines.append(f"**摘要**: {item.summary[:300]}...")
+            else:
+                report_lines.append(f"**摘要**: {item.content[:300]}..." if item.content else "**摘要**: 无")
             report_lines.append("")
 
         return "\n".join(report_lines)

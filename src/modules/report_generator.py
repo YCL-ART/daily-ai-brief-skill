@@ -55,8 +55,8 @@ class ReportGenerator:
         filename = f"ai_news_report_{timestamp}.md"
         filepath = os.path.join(self.output_dir, filename)
 
-        # 生成报告内容
-        report_content = self.hotness_evaluator.generate_hotness_report(evaluated_items)
+        # 生成报告内容 - 显示所有新闻
+        report_content = self.hotness_evaluator.generate_hotness_report(evaluated_items, top_n=None)
 
         # 添加统计信息
         stats = self._generate_statistics(evaluated_items, orchestrator)
@@ -108,14 +108,14 @@ class ReportGenerator:
         self.logger.info(f"JSON报告已保存: {filepath}")
         return filepath
 
-    def generate_summary_report(self, items: List[NewsItem], orchestrator=None, top_n: int = 10) -> str:
+    def generate_summary_report(self, items: List[NewsItem], orchestrator=None, top_n: int = None) -> str:
         """
         生成摘要报告（简洁版）
 
         Args:
             items: 新闻条目列表
             orchestrator: 协调器对象（可选），用于获取统计信息
-            top_n: 显示前N个条目
+            top_n: 显示前N个条目，None表示显示所有
 
         Returns:
             摘要报告文件路径
@@ -130,40 +130,35 @@ class ReportGenerator:
 
         # 生成摘要内容
         summary_lines = []
-        summary_lines.append("# AI新闻摘要")
+        summary_lines.append("# AI新闻列表")
         summary_lines.append(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         summary_lines.append(f"总条目数: {len(evaluated_items)}")
+        if top_n is None:
+            summary_lines.append("显示所有新闻条目")
+        else:
+            summary_lines.append(f"显示前 {top_n} 个条目")
         summary_lines.append("")
 
-        # 按热度分组
-        hot_items = [item for item in evaluated_items if item.hotness_score >= 7.0]
-        medium_items = [item for item in evaluated_items if 4.0 <= item.hotness_score < 7.0]
-        low_items = [item for item in evaluated_items if item.hotness_score < 4.0]
+        # 决定显示哪些条目
+        if top_n is None:
+            display_items = evaluated_items
+        else:
+            display_items = evaluated_items[:top_n]
 
-        # 热门新闻
-        if hot_items:
-            summary_lines.append("## 🔥 热门新闻")
-            for i, item in enumerate(hot_items[:top_n], 1):
-                summary_lines.append(f"{i}. **{item.title}**")
-                summary_lines.append(f"   - 热度: {item.hotness_score:.1f}")
-                summary_lines.append(f"   - 来源: {item.source}")
-                summary_lines.append(f"   - 链接: {item.url}")
-                summary_lines.append("")
-
-        # 中等热度新闻
-        if medium_items:
-            summary_lines.append("## 📰 一般新闻")
-            for i, item in enumerate(medium_items[:top_n], 1):
-                summary_lines.append(f"{i}. {item.title}")
-                summary_lines.append(f"   - 来源: {item.source}")
-                summary_lines.append(f"   - 链接: {item.url}")
-                summary_lines.append("")
+        # 显示所有新闻
+        for i, item in enumerate(display_items, 1):
+            summary_lines.append(f"## {i}. {item.title}")
+            summary_lines.append(f"**热度**: {item.hotness_score:.1f}/10")
+            summary_lines.append(f"**来源**: {item.source} ({item.source_type})")
+            summary_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
+            summary_lines.append(f"**链接**: {item.url}")
+            if item.summary:
+                summary_lines.append(f"**摘要**: {item.summary[:200]}...")
+            summary_lines.append("")
 
         # 统计信息
         summary_lines.append("## 📊 统计信息")
-        summary_lines.append(f"- 热门新闻（≥7分）: {len(hot_items)} 条")
-        summary_lines.append(f"- 一般新闻（4-7分）: {len(medium_items)} 条")
-        summary_lines.append(f"- 其他新闻: {len(low_items)} 条")
+        summary_lines.append(f"- 总条目数: {len(evaluated_items)}")
 
         # 抓取器统计
         if orchestrator:
@@ -181,16 +176,6 @@ class ReportGenerator:
                         summary_lines.append(f"  - {', '.join(failed_sources[:3])}")
                         if len(failed_sources) > 3:
                             summary_lines.append(f"    （共 {len(failed_sources)} 个失败来源）")
-
-        # 来源分布
-        source_counts = {}
-        for item in evaluated_items:
-            source_counts[item.source] = source_counts.get(item.source, 0) + 1
-
-        top_sources = sorted(source_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-        summary_lines.append("\n## 📈 热门来源")
-        for source, count in top_sources:
-            summary_lines.append(f"- {source}: {count} 条")
 
         # 保存摘要
         summary_content = "\n".join(summary_lines)
