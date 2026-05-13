@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(claude skills *)"
+      "Bash(claude skills *)",
+      "Bash(claude plugin *)",
+      "WebSearch"
     ]
   }
 }
