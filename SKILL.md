@@ -1,4 +1,131 @@
 ---
 name: daily-ai-brief-skill
 description: 一个简洁高效的AI新闻简报生成技能，专为Claude Code和OpenClaw优化。每日自动从多个可靠数据源采集AI领域最新动态，生成干净的Markdown格式简报，帮助您快速掌握AI行业前沿信息。
+author: ideamac
+version: 1.0.0
+tags: [ai, news, aggregator, claude, openclaw]
 ---
+
+# AI Daily Brief Skill
+
+一个专为Claude Code和OpenClaw设计的AI新闻聚合技能，每日自动从数十个高质量数据源采集AI领域最新动态，生成结构化、热度排序的新闻简报。
+
+## 功能特性
+
+- **多源采集**: 支持RSS、Reddit、X/Twitter、网页爬虫、API等多种数据源
+- **智能过滤**: 基于关键词和时效性自动过滤内容
+- **热度评估**: 根据多家媒体报道、社区传播、权威性等多维度评估新闻热度
+- **多格式输出**: 支持Markdown、JSON等多种报告格式
+- **并发执行**: 使用异步并发技术快速抓取多个数据源
+- **可配置性强**: 通过YAML配置文件轻松添加/删除数据源
+
+## 数据源覆盖
+
+- **国内媒体**: 36氪、机器之心、量子位、新智元、InfoQ、AI科技评论等
+- **国际媒体**: MIT Technology Review、TechCrunch、The Verge、Ars Technica、VentureBeat、Wired等
+- **学术研究**: OpenAI Blog、Hugging Face Blog、arXiv CS.AI/CS.LG等
+- **社区平台**: Reddit (MachineLearning, LocalLLaMA等)、X/Twitter关键账号
+- **行业动态**: Hacker News、行业博客等
+
+## 安装使用
+
+### 1. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. 配置数据源
+
+编辑 `src/data_sources.yaml` 配置文件，根据需要启用/禁用数据源，调整抓取参数。
+
+### 3. 运行技能
+
+```bash
+python src/main.py
+```
+
+### 4. 查看报告
+
+报告将自动生成在 `reports/` 目录下：
+- `ai_news_report_YYYYMMDD_HHMMSS.md` - 详细Markdown报告
+- `ai_news_summary_YYYYMMDD_HHMMSS.md` - 简洁摘要报告
+- `ai_news_report_YYYYMMDD_HHMMSS.json` - JSON格式数据
+
+## 配置说明
+
+### 数据源配置
+
+技能使用YAML格式配置文件 (`src/data_sources.yaml`)，包含以下主要部分：
+
+1. **rss_sources**: RSS订阅源配置
+2. **reddit_sources**: Reddit社区配置
+3. **x_sources**: X/Twitter账号配置
+4. **web_scrapers**: 网页爬虫配置
+5. **api_sources**: API接口配置
+6. **fetch_config**: 抓取全局配置
+7. **search_keywords**: 搜索关键词矩阵
+
+### 过滤配置
+
+每个数据源支持以下过滤选项：
+
+```yaml
+filters:
+  include_keywords: ["AI", "人工智能", "大模型"]  # 包含关键词
+  exclude_keywords: ["广告", "推广"]              # 排除关键词
+```
+
+### 抓取配置
+
+```yaml
+fetch_config:
+  max_items_per_source: 15      # 每个源最大抓取数量
+  timeout_seconds: 30           # 请求超时时间
+  max_retries: 2                # 重试次数
+  max_age_hours: 72             # 最大新闻年龄（小时）
+  exclude_keywords:             # 全局排除关键词
+    - "sponsored"
+    - "advertisement"
+```
+
+## 热度评估算法
+
+技能使用多维度热度评估算法，权重如下：
+
+| 信号 | 权重 | 说明 |
+|------|------|------|
+| 多家媒体报道同一事件 | ⭐⭐⭐ 高 | 3+ 来源 = 确认热点 |
+| 社区病毒传播证据 | ⭐⭐⭐ 高 | GitHub star暴涨、Twitter刷屏、HN首页 |
+| 来自权威来源 | ⭐⭐⭐ 高 | 顶会、大厂官宣等 |
+| 实际用户体验分享 | ⭐⭐ 中 | 有人真的在用 > 只是发布了 |
+| 技术突破性/影响范围 | ⭐⭐ 中 | |
+| 争议性（安全、伦理讨论） | ⭐⭐ 中 | 争议往往说明影响力大 |
+| 时效性（越新越热） | ⭐ 中低 | 辅助排序 |
+
+## 扩展开发
+
+### 添加新的抓取器
+
+1. 在 `src/modules/` 目录下创建新的抓取器类，继承 `BaseFetcher`
+2. 实现 `async def fetch(self) -> List[NewsItem]` 方法
+3. 在 `fetcher_factory.py` 中注册新的抓取器类型
+
+### 添加新的数据源
+
+1. 在 `src/data_sources.yaml` 中添加新的数据源配置
+2. 根据数据源类型选择相应的抓取器类型
+3. 调整过滤参数和抓取数量
+
+## 计划功能
+
+- [ ] 支持更多社交媒体平台 (LinkedIn, 微博等)
+- [ ] 添加情感分析功能
+- [ ] 支持自定义报告模板
+- [ ] 添加定时任务调度
+- [ ] 支持数据库存储历史数据
+- [ ] 添加Web界面
+
+## 问题反馈
+
+如遇问题或建议，请提交Issue或联系维护者。
