@@ -12,7 +12,7 @@ tags: [ai, news, aggregator, claude, openclaw]
 
 ## 功能特性
 
-- **多源采集**: 支持RSS、Reddit、X/Twitter、网页爬虫、API等多种数据源
+- **多源采集**: 支持RSS、Reddit、X/Twitter、网页爬虫、API、WebSearch（搜索引擎）等多种数据源
 - **智能过滤**: 基于关键词和时效性自动过滤内容
 - **热度评估**: 根据多家媒体报道、社区传播、权威性等多维度评估新闻热度
 - **多格式输出**: 支持Markdown、JSON等多种报告格式
@@ -26,6 +26,7 @@ tags: [ai, news, aggregator, claude, openclaw]
 - **学术研究**: OpenAI Blog、Hugging Face Blog、arXiv CS.AI/CS.LG等
 - **社区平台**: Reddit (MachineLearning, LocalLLaMA等)、X/Twitter关键账号
 - **行业动态**: Hacker News、行业博客等
+- **搜索引擎**: Google、Bing等（通过WebSearch集成）
 
 ## 安装使用
 
@@ -65,6 +66,7 @@ python src/main.py
 5. **api_sources**: API接口配置
 6. **fetch_config**: 抓取全局配置
 7. **search_keywords**: 搜索关键词矩阵
+8. **web_search_sources**: WebSearch搜索引擎配置
 
 ### 过滤配置
 
