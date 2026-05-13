@@ -359,12 +359,10 @@ api_sources:
 # 数据获取配置
 fetch_config:
   max_items_per_source: 15
-  timeout_seconds: 20
+  timeout_seconds: 30
   user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
   max_retries: 2
-  retry_delay_seconds: 2
-  min_content_length: 10
-  max_content_length: 5000
+  retry_delay_seconds: 5
   exclude_keywords:
     - "sponsored"
     - "advertisement"
@@ -376,7 +374,7 @@ fetch_config:
     - "zh"
     - "en"
   max_age_hours: 72
-  playwright_wait_seconds: 3
+  playwright_wait_seconds: 2
 
 # 搜索关键词矩阵
 search_keywords:
