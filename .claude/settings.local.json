@@ -4,7 +4,10 @@
       "Bash(claude skills *)",
       "Bash(claude plugin *)",
       "WebSearch",
-      "Bash(npm list *)"
+      "Bash(npm list *)",
+      "WebFetch(domain:clawhub.ai)",
+      "Bash(openclaw skills *)",
+      "Bash(claude skill *)"
     ]
   }
 }
