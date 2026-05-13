@@ -365,7 +365,7 @@ class ReportGenerator:
         current_date = datetime.now()
         # 格式化为"年月日 今日AI简报"
         date_str = current_date.strftime("%Y年%m月%d日")
-        report_lines.append(f"# {date_str} 今日AI简报")
+        report_lines.append(f"# {date_str} 行业简报")
         report_lines.append("")
 
         # 按分类分组
