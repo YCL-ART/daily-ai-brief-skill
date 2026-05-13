@@ -15,11 +15,12 @@ from typing import Dict, Any, Optional, List
 
 # 导入数据源管理器
 try:
-    from data_source_manager import DataSourceManager
+    from data_source_manager import DataSourceManager, _close_playwright
     DATA_SOURCE_AVAILABLE = True
 except ImportError:
     print("⚠️ 数据源管理器不可用，将使用随机生成内容")
     DATA_SOURCE_AVAILABLE = False
+    _close_playwright = lambda: None
 
 class EnhancedAIBrief:
     """增强版AI日报生成器（集成真实数据源）"""
@@ -268,6 +269,8 @@ def main():
         print("🎉 AI每日简报生成完成！")
     else:
         print(f"\n❌ 简报生成失败: {result.get('error', '未知错误')}")
+
+    _close_playwright()
 
 if __name__ == "__main__":
     main()

@@ -1,4 +1,5 @@
-# AI新闻数据源配置（增强版 - 整合source.bak全部数据源）
+# AI新闻数据源配置（清理优化最终版）
+# 已剔除：失效RSS、空数据源、爬虫解析失败、低质量社区、重复冗余源
 
 # RSS数据源配置
 rss_sources:
@@ -181,36 +182,8 @@ rss_sources:
     num_items: 5
 
   # ===== 学术与研究 =====
-  - name: "Google AI Blog"
-    url: "https://ai.googleblog.com/feeds/posts/default"
-    language: "en"
-    enabled: true
-    priority: 1
-    num_items: 5
-
   - name: "OpenAI Blog"
     url: "https://openai.com/blog/rss.xml"
-    language: "en"
-    enabled: true
-    priority: 1
-    num_items: 5
-
-  - name: "Anthropic News"
-    url: "https://www.anthropic.com/feed/news.xml"
-    language: "en"
-    enabled: true
-    priority: 1
-    num_items: 5
-
-  - name: "DeepMind Blog"
-    url: "https://deepmind.com/blog/feed/basic/"
-    language: "en"
-    enabled: true
-    priority: 1
-    num_items: 5
-
-  - name: "Meta AI Blog"
-    url: "https://ai.meta.com/blog/rss/"
     language: "en"
     enabled: true
     priority: 1
@@ -256,56 +229,43 @@ rss_sources:
     filters:
       include_keywords: ["AI", "artificial intelligence", "machine learning"]
 
-  # ===== 开源项目追踪 =====
-  - name: "GitHub Trending AI"
-    url: "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml"
-    language: "en"
-    enabled: true
-    priority: 2
-    num_items: 8
-    filters:
-      include_keywords: ["AI", "LLM", "GPT", "model", "neural", "transformer", "deep-learning", "machine-learning"]
-
-  - name: "Product Hunt AI"
-    url: "https://www.producthunt.com/feed"
-    language: "en"
-    enabled: true
-    priority: 2
-    num_items: 5
-    filters:
-      include_keywords: ["AI", "artificial intelligence", "GPT", "LLM"]
-
-  # ===== 社区与论坛 =====
-  - name: "Hacker News AI"
-    url: "https://hnrss.org/newest?q=AI+OR+LLM+OR+GPT+OR+OpenAI+OR+machine+learning"
+  # ===== 官方可用博客 =====
+  - name: "DeepMind Blog"
+    url: "https://deepmind.com/blog/feed/basic/"
     language: "en"
     enabled: true
     priority: 1
     num_items: 10
 
+# Reddit API数据源（替代被屏蔽RSS）
+reddit_sources:
   - name: "Reddit MachineLearning"
-    url: "https://www.reddit.com/r/MachineLearning/.rss"
+    type: "reddit"
+    subreddit: "MachineLearning"
     language: "en"
     enabled: true
     priority: 2
-    num_items: 8
+    num_items: 10
 
   - name: "Reddit LocalLLaMA"
-    url: "https://www.reddit.com/r/LocalLLaMA/.rss"
+    type: "reddit"
+    subreddit: "LocalLLaMA"
+    language: "en"
+    enabled: true
+    priority: 2
+    num_items: 10
+
+  - name: "Reddit Artificial"
+    type: "reddit"
+    subreddit: "artificial"
     language: "en"
     enabled: true
     priority: 2
     num_items: 8
 
-  - name: "Reddit Artificial"
-    url: "https://www.reddit.com/r/artificial/.rss"
-    language: "en"
-    enabled: true
-    priority: 2
-    num_items: 5
-
   - name: "Reddit Singularity"
-    url: "https://www.reddit.com/r/singularity/.rss"
+    type: "reddit"
+    subreddit: "singularity"
     language: "en"
     enabled: true
     priority: 3
@@ -313,13 +273,6 @@ rss_sources:
 
 # X/Twitter数据源
 x_sources:
-  - name: "SenseTime AI"
-    username: "SenseTime_AI"
-    language: "en"
-    enabled: true
-    priority: 1
-    num_items: 5
-
   - name: "OpenRouter"
     username: "OpenRouter"
     language: "en"
@@ -369,13 +322,6 @@ x_sources:
     priority: 3
     num_items: 5
 
-  - name: "Andrew Ng"
-    username: "AndrewYNg"
-    language: "en"
-    enabled: true
-    priority: 1
-    num_items: 5
-
   - name: "Sam Altman"
     username: "sama"
     language: "en"
@@ -383,37 +329,16 @@ x_sources:
     priority: 1
     num_items: 5
 
-  - name: "Jim Fan"
-    username: "DrJimFan"
-    language: "en"
-    enabled: true
-    priority: 2
-    num_items: 5
-
-  - name: "Andrej Karpathy"
-    username: "karpathy"
-    language: "en"
-    enabled: true
-    priority: 1
-    num_items: 5
-
-# 网页爬虫配置
+# 网页爬虫配置（仅保留验证可用）
 web_scrapers:
-  - name: "Claude官方博客"
-    url: "https://www.anthropic.com/news"
+  - name: "Google DeepMind Blog"
+    url: "https://deepmind.google/blog/"
     selector: "article"
     language: "en"
     enabled: true
     priority: 1
     num_items: 5
-
-  - name: "Papers With Code"
-    url: "https://paperswithcode.com"
-    selector: ".paper-card"
-    language: "en"
-    enabled: true
-    priority: 2
-    num_items: 5
+    use_playwright: true
 
   - name: "Hugging Face Models"
     url: "https://huggingface.co/models"
@@ -422,50 +347,10 @@ web_scrapers:
     enabled: true
     priority: 2
     num_items: 5
-
-  - name: "开源PPT工具"
-    url: "https://github.com/op7418/guizang-ppt"
-    selector: ".markdown-body"
-    language: "zh"
-    enabled: true
-    priority: 3
-    num_items: 5
-
-  - name: "即刻AI圈子"
-    url: "https://okjike.com"
-    selector: ".topic-item"
-    language: "zh"
-    enabled: true
-    priority: 3
-    num_items: 5
-
-  - name: "V2EX AI"
-    url: "https://www.v2ex.com/go/ai"
-    selector: ".topic-link"
-    language: "zh"
-    enabled: true
-    priority: 3
-    num_items: 5
-
-  - name: "知乎AI"
-    url: "https://www.zhihu.com/topic/19551275/hot"
-    selector: ".ContentItem"
-    language: "zh"
-    enabled: true
-    priority: 2
-    num_items: 5
+    use_playwright: true
 
 # API数据源配置
 api_sources:
-  - name: "GitHub Trending API"
-    type: "github"
-    endpoint: "https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order=desc"
-    params:
-      per_page: 10
-    enabled: true
-    priority: 2
-    num_items: 8
-
   - name: "Hacker News API"
     type: "hackernews"
     endpoint: "https://hacker-news.firebaseio.com/v0/topstories.json"
@@ -474,27 +359,15 @@ api_sources:
     priority: 1
     num_items: 10
 
-  - name: "Papers With Code API"
-    type: "generic"
-    endpoint: "https://paperswithcode.com/api/v1/papers/"
-    params:
-      ordering: "-published"
-      limit: 10
-    enabled: true
-    priority: 2
-    num_items: 8
-
 # 数据获取配置
 fetch_config:
   max_items_per_source: 15
-  timeout_seconds: 15
-  user_agent: "AI-Daily-Brief/2.0 (+https://github.com/ai-daily-brief)"
-
-  max_retries: 1
-  retry_delay_seconds: 1
-
-  min_content_length: 20
-  max_content_length: 800
+  timeout_seconds: 20
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  max_retries: 2
+  retry_delay_seconds: 2
+  min_content_length: 10
+  max_content_length: 5000
   exclude_keywords:
     - "sponsored"
     - "advertisement"
@@ -502,14 +375,13 @@ fetch_config:
     - "buy now"
     - "广告"
     - "推广"
-
   preferred_languages:
     - "zh"
     - "en"
-
   max_age_hours: 72
+  playwright_wait_seconds: 3
 
-# 搜索关键词矩阵（来自source.bak）
+# 搜索关键词矩阵
 search_keywords:
   newsletter:
     - "last week in AI"
@@ -548,21 +420,18 @@ source_priority:
     - "rss"
     - "api"
     - "web"
-
   credibility_weights:
     "official": 1.0
     "tech_media": 0.8
     "social_media": 0.6
     "personal_blog": 0.5
-
   channel_credibility:
     "openai.com": "official"
     "anthropic.com": "official"
     "claude.com": "official"
     "apple.com": "official"
-    "ai.googleblog.com": "official"
     "deepmind.com": "official"
-    "ai.meta.com": "official"
+    "deepmind.google": "official"
     "huggingface.co": "official"
     "technologyreview.com": "tech_media"
     "techcrunch.com": "tech_media"
@@ -585,18 +454,15 @@ source_priority:
     "twitter.com": "social_media"
     "reddit.com": "social_media"
     "news.ycombinator.com": "social_media"
-    "okjike.com": "social_media"
-    "v2ex.com": "social_media"
-    "zhihu.com": "social_media"
+    "paloaltonetworks.com": "tech_media"
+    "blog.trailofbits.com": "tech_media"
 
 # 数据验证配置
 data_validation:
   enabled: true
-
   required_fields:
     - "title"
     - "source"
-
   field_length_limits:
     title:
       min: 5
@@ -604,16 +470,14 @@ data_validation:
     description:
       min: 10
       max: 1000
-
   validate_links: true
   allowed_domains:
     - "openai.com"
     - "anthropic.com"
     - "claude.com"
     - "apple.com"
-    - "ai.googleblog.com"
     - "deepmind.com"
-    - "ai.meta.com"
+    - "deepmind.google"
     - "huggingface.co"
     - "ithome.com"
     - "github.com"
@@ -639,9 +503,5 @@ data_validation:
     - "reddit.com"
     - "news.ycombinator.com"
     - "substack.com"
-    - "okjike.com"
-    - "v2ex.com"
-    - "zhihu.com"
     - "paloaltonetworks.com"
     - "blog.trailofbits.com"
-    - "producthunt.com"
