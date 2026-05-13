@@ -5,7 +5,7 @@
 import asyncio
 import logging
 from typing import List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 
 from .base_fetcher import BaseFetcher, NewsItem
@@ -27,6 +27,7 @@ class Orchestrator:
         self.logger = logging.getLogger(__name__)
         self.fetchers: List[BaseFetcher] = []
         self.results: List[NewsItem] = []
+        self.failed_fetchers: List[Dict[str, Any]] = []  # 存储失败的抓取器信息
 
     def load_fetchers(self) -> List[BaseFetcher]:
         """
@@ -76,15 +77,28 @@ class Orchestrator:
 
         # 处理结果
         self.results = []
+        self.failed_fetchers = []
         for i, result in enumerate(all_results):
             fetcher = self.fetchers[i]
             if isinstance(result, Exception):
                 self.logger.error(f"抓取器 {fetcher.name} 失败: {result}")
+                self.failed_fetchers.append({
+                    "name": fetcher.name,
+                    "type": fetcher.__class__.__name__,
+                    "error": str(result),
+                    "config": fetcher.config
+                })
             elif isinstance(result, list):
                 self.results.extend(result)
                 self.logger.info(f"抓取器 {fetcher.name} 获取了 {len(result)} 个条目")
             else:
                 self.logger.warning(f"抓取器 {fetcher.name} 返回了意外结果类型: {type(result)}")
+                self.failed_fetchers.append({
+                    "name": fetcher.name,
+                    "type": fetcher.__class__.__name__,
+                    "error": f"意外结果类型: {type(result)}",
+                    "config": fetcher.config
+                })
 
         self.logger.info(f"所有抓取完成，共获取 {len(self.results)} 个条目")
         return self.results
@@ -137,7 +151,7 @@ class Orchestrator:
 
         # 按时间过滤
         if max_age_hours:
-            cutoff_time = datetime.now() - asyncio.timedelta(hours=max_age_hours)
+            cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
             filtered_results = [item for item in unique_results if item.publish_date >= cutoff_time]
             self.logger.info(f"按时间过滤后剩余 {len(filtered_results)} 个条目")
         else:
@@ -177,11 +191,16 @@ class Orchestrator:
         Returns:
             统计信息字典
         """
+        successful_fetchers = len(self.fetchers) - len(self.failed_fetchers)
+
         stats = {
             "total_fetchers": len(self.fetchers),
+            "successful_fetchers": successful_fetchers,
+            "failed_fetchers": len(self.failed_fetchers),
             "total_results": len(self.results),
             "results_by_source": {},
             "results_by_type": {},
+            "failed_sources": [f["name"] for f in self.failed_fetchers],
         }
 
         # 按来源统计

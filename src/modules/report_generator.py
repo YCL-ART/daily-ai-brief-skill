@@ -35,12 +35,13 @@ class ReportGenerator:
         self.logger = logging.getLogger(__name__)
         self.hotness_evaluator = HotnessEvaluator()
 
-    def generate_daily_report(self, items: List[NewsItem]) -> str:
+    def generate_daily_report(self, items: List[NewsItem], orchestrator=None) -> str:
         """
         生成每日报告
 
         Args:
             items: 新闻条目列表
+            orchestrator: 协调器对象（可选），用于获取统计信息
 
         Returns:
             报告文件路径
@@ -58,7 +59,7 @@ class ReportGenerator:
         report_content = self.hotness_evaluator.generate_hotness_report(evaluated_items)
 
         # 添加统计信息
-        stats = self._generate_statistics(evaluated_items)
+        stats = self._generate_statistics(evaluated_items, orchestrator)
         report_content += "\n\n## 统计信息\n"
         report_content += stats
 
@@ -107,12 +108,13 @@ class ReportGenerator:
         self.logger.info(f"JSON报告已保存: {filepath}")
         return filepath
 
-    def generate_summary_report(self, items: List[NewsItem], top_n: int = 10) -> str:
+    def generate_summary_report(self, items: List[NewsItem], orchestrator=None, top_n: int = 10) -> str:
         """
         生成摘要报告（简洁版）
 
         Args:
             items: 新闻条目列表
+            orchestrator: 协调器对象（可选），用于获取统计信息
             top_n: 显示前N个条目
 
         Returns:
@@ -163,6 +165,23 @@ class ReportGenerator:
         summary_lines.append(f"- 一般新闻（4-7分）: {len(medium_items)} 条")
         summary_lines.append(f"- 其他新闻: {len(low_items)} 条")
 
+        # 抓取器统计
+        if orchestrator:
+            stats = orchestrator.get_statistics()
+            total_fetchers = stats.get("total_fetchers", 0)
+            successful_fetchers = stats.get("successful_fetchers", 0)
+            failed_fetchers = stats.get("failed_fetchers", 0)
+
+            if total_fetchers > 0:
+                summary_lines.append(f"- 抓取成功率: {successful_fetchers}/{total_fetchers} ({successful_fetchers/total_fetchers*100:.1f}%)")
+                if failed_fetchers > 0:
+                    failed_sources = stats.get("failed_sources", [])
+                    summary_lines.append(f"- 失败来源: {failed_fetchers} 个")
+                    if failed_sources:
+                        summary_lines.append(f"  - {', '.join(failed_sources[:3])}")
+                        if len(failed_sources) > 3:
+                            summary_lines.append(f"    （共 {len(failed_sources)} 个失败来源）")
+
         # 来源分布
         source_counts = {}
         for item in evaluated_items:
@@ -181,22 +200,31 @@ class ReportGenerator:
         self.logger.info(f"摘要报告已保存: {filepath}")
         return filepath
 
-    def _generate_statistics(self, items: List[NewsItem]) -> str:
+    def _generate_statistics(self, items: List[NewsItem], orchestrator=None) -> str:
         """
         生成统计信息
 
         Args:
             items: 新闻条目列表
+            orchestrator: 协调器对象（可选），用于获取失败信息
 
         Returns:
             统计信息文本
         """
-        if not items:
-            return "无数据"
-
         # 基本统计
         total_items = len(items)
-        hot_items = len([item for item in items if item.hotness_score >= 7.0])
+        hot_items = len([item for item in items if item.hotness_score >= 7.0]) if items else 0
+
+        # 抓取器统计
+        if orchestrator:
+            stats = orchestrator.get_statistics()
+            total_fetchers = stats.get("total_fetchers", 0)
+            successful_fetchers = stats.get("successful_fetchers", 0)
+            failed_fetchers = stats.get("failed_fetchers", 0)
+            failed_sources = stats.get("failed_sources", [])
+        else:
+            total_fetchers = successful_fetchers = failed_fetchers = 0
+            failed_sources = []
 
         # 来源统计
         source_counts = {}
@@ -217,31 +245,46 @@ class ReportGenerator:
         stats_lines.append(f"- 总条目数: {total_items}")
         stats_lines.append(f"- 热门条目（≥7分）: {hot_items}")
         stats_lines.append(f"- 24小时内新闻: {recent_24h}")
+
+        if total_fetchers > 0:
+            stats_lines.append(f"- 抓取器统计: {successful_fetchers}/{total_fetchers} 成功")
+            if failed_fetchers > 0:
+                stats_lines.append(f"- 失败抓取器: {failed_fetchers} 个")
+                if failed_sources:
+                    stats_lines.append(f"- 失败来源: {', '.join(failed_sources[:5])}")
+                    if len(failed_sources) > 5:
+                        stats_lines.append(f"  （共 {len(failed_sources)} 个失败来源）")
+
         stats_lines.append("")
 
-        stats_lines.append("### 来源分布")
-        for source_type, count in sorted(source_type_counts.items(), key=lambda x: x[1], reverse=True):
-            stats_lines.append(f"- {source_type}: {count} 条")
+        # 只在有数据时显示来源分布
+        if source_type_counts:
+            stats_lines.append("### 来源分布")
+            for source_type, count in sorted(source_type_counts.items(), key=lambda x: x[1], reverse=True):
+                stats_lines.append(f"- {source_type}: {count} 条")
 
-        stats_lines.append("")
-        stats_lines.append("### 语言分布")
-        for language, count in sorted(language_counts.items(), key=lambda x: x[1], reverse=True):
-            stats_lines.append(f"- {language}: {count} 条")
+        if language_counts:
+            stats_lines.append("")
+            stats_lines.append("### 语言分布")
+            for language, count in sorted(language_counts.items(), key=lambda x: x[1], reverse=True):
+                stats_lines.append(f"- {language}: {count} 条")
 
-        stats_lines.append("")
-        stats_lines.append("### 热门来源（前5）")
-        top_sources = sorted(source_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-        for source, count in top_sources:
-            stats_lines.append(f"- {source}: {count} 条")
+        if source_counts:
+            stats_lines.append("")
+            stats_lines.append("### 热门来源（前5）")
+            top_sources = sorted(source_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+            for source, count in top_sources:
+                stats_lines.append(f"- {source}: {count} 条")
 
         return "\n".join(stats_lines)
 
-    def generate_all_reports(self, items: List[NewsItem]) -> Dict[str, str]:
+    def generate_all_reports(self, items: List[NewsItem], orchestrator=None) -> Dict[str, str]:
         """
         生成所有类型的报告
 
         Args:
             items: 新闻条目列表
+            orchestrator: 协调器对象（可选），用于获取统计信息
 
         Returns:
             报告文件路径字典
@@ -249,7 +292,7 @@ class ReportGenerator:
         reports = {}
 
         try:
-            reports["daily"] = self.generate_daily_report(items)
+            reports["daily"] = self.generate_daily_report(items, orchestrator)
         except Exception as e:
             self.logger.error(f"生成每日报告失败: {e}")
 
@@ -259,7 +302,7 @@ class ReportGenerator:
             self.logger.error(f"生成JSON报告失败: {e}")
 
         try:
-            reports["summary"] = self.generate_summary_report(items)
+            reports["summary"] = self.generate_summary_report(items, orchestrator)
         except Exception as e:
             self.logger.error(f"生成摘要报告失败: {e}")
 

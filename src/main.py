@@ -64,14 +64,12 @@ async def main():
         items = await orchestrator.run()
 
         if not items:
-            logger.warning("没有抓取到任何数据")
-            print("⚠️  没有抓取到任何数据，请检查网络连接或配置")
-            return
+            logger.warning("没有抓取到任何数据，将继续生成空报告")
 
         # 4. 生成报告
         logger.info("步骤4: 生成报告")
         report_generator = ReportGenerator()
-        reports = report_generator.generate_all_reports(items)
+        reports = report_generator.generate_all_reports(items, orchestrator)
 
         # 5. 输出结果
         print("\n" + "=" * 60)
