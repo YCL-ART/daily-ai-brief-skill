@@ -361,9 +361,11 @@ class ReportGenerator:
 
         # 生成报告内容
         report_lines = []
-        report_lines.append("# AI每日简报")
-        report_lines.append(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        report_lines.append(f"总条目数: {len(evaluated_items)}")
+        # 获取当前日期
+        current_date = datetime.now()
+        # 格式化为"年月日 今日AI简报"
+        date_str = current_date.strftime("%Y年%m月%d日")
+        report_lines.append(f"# {date_str} 今日AI简报")
         report_lines.append("")
 
         # 按分类分组
