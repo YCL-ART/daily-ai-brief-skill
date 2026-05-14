@@ -273,11 +273,6 @@ class ReportGenerator:
                     report_lines.append(f"{item.summary[:250]}...")
                 report_lines.append("")
 
-        # 添加统计信息
-        report_lines.append("## 📊 统计信息")
-        stats = self._generate_statistics(sorted_items, orchestrator)
-        report_lines.append(stats)
-
         # 保存报告
         report_content = "\n".join(report_lines)
         with open(filepath, 'w', encoding='utf-8') as f:
@@ -286,72 +281,6 @@ class ReportGenerator:
         self.logger.info(f"结构化报告已保存: {filepath}")
         return filepath
 
-    def _generate_statistics(self, items: List[NewsItem], orchestrator=None) -> str:
-        """
-        生成统计信息
-
-        Args:
-            items: 新闻条目列表
-            orchestrator: 协调器对象（可选），用于获取失败信息
-
-        Returns:
-            统计信息文本
-        """
-        # 基本统计
-        total_items = len(items)
-
-        # 抓取器统计
-        if orchestrator:
-            stats = orchestrator.get_statistics()
-            total_fetchers = stats.get("total_fetchers", 0)
-            successful_fetchers = stats.get("successful_fetchers", 0)
-            failed_fetchers = stats.get("failed_fetchers", 0)
-            failed_sources = stats.get("failed_sources", [])
-        else:
-            total_fetchers = successful_fetchers = failed_fetchers = 0
-            failed_sources = []
-
-        # 来源统计
-        source_counts = {}
-        source_type_counts = {}
-        for item in items:
-            source_counts[item.source] = source_counts.get(item.source, 0) + 1
-            source_type_counts[item.source_type] = source_type_counts.get(item.source_type, 0) + 1
-
-        # 时间统计
-        now = datetime.now()
-        recent_24h = len([item for item in items
-                         if item.publish_date and (now - item.publish_date).total_seconds() <= 86400])
-
-        # 生成统计文本
-        stats_lines = []
-        stats_lines.append(f"- 24小时内新闻: {recent_24h}")
-
-        if total_fetchers > 0:
-            stats_lines.append(f"- 抓取器统计: {successful_fetchers}/{total_fetchers} 成功")
-            if failed_fetchers > 0:
-                stats_lines.append(f"- 失败抓取器: {failed_fetchers} 个")
-                if failed_sources:
-                    stats_lines.append(f"- 失败来源: {', '.join(failed_sources[:5])}")
-                    if len(failed_sources) > 5:
-                        stats_lines.append(f"  （共 {len(failed_sources)} 个失败来源）")
-
-        stats_lines.append("")
-
-        # 只在有数据时显示来源分布
-        if source_type_counts:
-            stats_lines.append("### 来源分布")
-            for source_type, count in sorted(source_type_counts.items(), key=lambda x: x[1], reverse=True):
-                stats_lines.append(f"- {source_type}: {count} 条")
-
-        if source_counts:
-            stats_lines.append("")
-            stats_lines.append("### 热门来源（前5）")
-            top_sources = sorted(source_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-            for source, count in top_sources:
-                stats_lines.append(f"- {source}: {count} 条")
-
-        return "\n".join(stats_lines)
 
     def generate_all_reports(self, items: List[NewsItem], orchestrator=None) -> Dict[str, str]:
         """
