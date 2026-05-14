@@ -85,7 +85,7 @@ class ReportGenerator:
 
             for item in channel_items:
                 report_lines.append(f"### {item_counter}. {item.title}")
-                report_lines.append(f"**来源**: {item.source} ({item.source_type})")
+                report_lines.append(f"**来源**: {item.source}")
                 report_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
                 report_lines.append(f"**链接**: [阅读原文]({item.url})")
                 if item.summary:
@@ -333,7 +333,7 @@ class ReportGenerator:
 
             for item in channel_items:
                 summary_lines.append(f"### {item_counter}. {item.title}")
-                summary_lines.append(f"**来源**: {item.source} ({item.source_type})")
+                summary_lines.append(f"**来源**: {item.source}")
                 summary_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
                 summary_lines.append(f"**链接**: [阅读原文]({item.url})")
                 if item.summary:
@@ -441,7 +441,7 @@ class ReportGenerator:
 
             for i, item in enumerate(category_items, 1):
                 report_lines.append(f"### {i}. {item.title}")
-                report_lines.append(f"**来源**: {item.source} ({item.source_type})")
+                report_lines.append(f"**来源**: {item.source}")
                 report_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
                 report_lines.append(f"**链接**: [阅读原文]({item.url})")
                 if item.summary:
