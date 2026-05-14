@@ -89,7 +89,8 @@ class ReportGenerator:
                 report_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
                 report_lines.append(f"**链接**: [阅读原文]({item.url})")
                 if item.summary:
-                    report_lines.append(f"**摘要**: {item.summary[:300]}...")
+                    report_lines.append(f"**摘要**:")
+                    report_lines.append(f"{item.summary[:300]}...")
                 report_lines.append("")
                 item_counter += 1
 
@@ -337,7 +338,8 @@ class ReportGenerator:
                 summary_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
                 summary_lines.append(f"**链接**: [阅读原文]({item.url})")
                 if item.summary:
-                    summary_lines.append(f"**摘要**: {item.summary[:200]}...")
+                    summary_lines.append(f"**摘要**:")
+                    summary_lines.append(f"{item.summary[:200]}...")
                 summary_lines.append("")
                 item_counter += 1
 
