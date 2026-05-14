@@ -118,7 +118,7 @@ rss_sources:
 x_sources:
   - name: "OpenRouter"
     username: "OpenRouter"
-    enabled: false
+    enabled: true
     priority: 1
     num_items: 5
 
@@ -148,7 +148,7 @@ x_sources:
 
   - name: "AI行业观察"
     usernames: [ "AYi_AInotes", "MiniMax_AI" ]
-    enabled: true
+    enabled: false
     priority: 2
     num_items: 5
 
@@ -198,7 +198,7 @@ web_scrapers:
   - name: "中国信通院"
     url: "https://www.caict.ac.cn/kxyj/"
     selector: "article, .news-item, .research-item"
-    enabled: true
+    enabled: false
     priority: 2
     num_items: 5
     use_playwright: true
@@ -206,7 +206,7 @@ web_scrapers:
   - name: "清华大学人工智能研究院"
     url: "https://air.tsinghua.edu.cn/"
     selector: "article, .news-item, .research-item"
-    enabled: true
+    enabled: false
     priority: 2
     num_items: 5
     use_playwright: true
@@ -214,7 +214,7 @@ web_scrapers:
   - name: "Bloomberg AI"
     url: "https://www.bloomberg.com/technology/artificial-intelligence"
     selector: "article, .story, .news-item"
-    enabled: true
+    enabled: false
     priority: 1
     num_items: 5
     use_playwright: true
@@ -233,7 +233,7 @@ api_sources:
     type: "hackernews"
     endpoint: "https://hacker-news.firebaseio.com/v0/topstories.json"
     params: { }
-    enabled: true
+    enabled: false
     priority: 1
     num_items: 5
 
