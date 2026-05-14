@@ -135,7 +135,6 @@ class RSSFetcher(BaseFetcher):
             content=content,
             source=self.name,
             source_type="rss",
-            language=self.language,
             publish_date=publish_date,
             author=author,
             tags=tags,

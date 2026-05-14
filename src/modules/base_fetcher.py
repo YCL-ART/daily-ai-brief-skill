@@ -20,7 +20,6 @@ class NewsItem:
         content: str = "",
         source: str = "",
         source_type: str = "",
-        language: str = "en",
         publish_date: Optional[datetime] = None,
         author: str = "",
         tags: List[str] = None,
@@ -32,7 +31,6 @@ class NewsItem:
         self.content = content
         self.source = source
         self.source_type = source_type
-        self.language = language
         self.publish_date = publish_date or datetime.now()
         self.author = author
         self.tags = tags or []
@@ -50,7 +48,6 @@ class NewsItem:
             "content": self.content[:500] + "..." if len(self.content) > 500 else self.content,
             "source": self.source,
             "source_type": self.source_type,
-            "language": self.language,
             "publish_date": self.publish_date.isoformat() if self.publish_date else None,
             "author": self.author,
             "tags": self.tags,
@@ -74,7 +71,6 @@ class BaseFetcher(abc.ABC):
         """
         self.config = config
         self.name = config.get("name", "unknown")
-        self.language = config.get("language", "en")
         self.enabled = config.get("enabled", True)
         self.priority = config.get("priority", 3)
         self.max_items = config.get("num_items", 10)

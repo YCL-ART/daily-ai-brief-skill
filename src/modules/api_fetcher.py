@@ -190,7 +190,6 @@ class APIFetcher(BaseFetcher):
             summary=self.cleanup_content(text[:200] if text else title),
             source=self.name,
             source_type="hackernews",
-            language=self.language,
             publish_date=publish_date,
             author=author,
             tags=["hackernews"],
@@ -242,7 +241,6 @@ class APIFetcher(BaseFetcher):
                             content=str(item_data),
                             source=self.name,
                             source_type="api",
-                            language=self.language,
                             metadata={"raw_data": str(item_data)[:500]}
                         )
                     if item:
@@ -317,7 +315,6 @@ class APIFetcher(BaseFetcher):
             summary=summary,
             source=self.name,
             source_type="api",
-            language=self.language,
             publish_date=publish_date,
             author=author,
             tags=tags,
