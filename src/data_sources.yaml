@@ -1,7 +1,7 @@
 # RSS数据源配置
 rss_sources:
   # ===== 国内媒体 =====
-  - name: "36氪 AI科技"
+  - name: "36氪"
     url: "https://www.36kr.com/feed"
     language: "zh"
     enabled: true
@@ -419,36 +419,3 @@ fetch_config:
     - "en"
   max_age_hours: 72
   playwright_wait_seconds: 2
-
-# 搜索关键词矩阵
-search_keywords:
-  newsletter:
-    - "last week in AI"
-    - "AI weekly roundup"
-    - "site:substack.com AI news"
-  viral:
-    - "viral AI tool"
-    - "viral AI agent"
-    - "AI trending site:reddit.com"
-    - "GitHub trending AI"
-    - "AI everyone is talking about"
-  product_launch:
-    - "AI model release"
-    - "LLM launch"
-    - "OpenAI OR Anthropic OR Google announcement"
-    - "大模型发布"
-    - "AI 新产品"
-  research:
-    - "AI breakthrough"
-    - "state of the art"
-    - "AI paper"
-    - "machine learning research"
-  business:
-    - "AI startup funding"
-    - "AI acquisition"
-    - "AI IPO"
-  regulation:
-    - "AI regulation"
-    - "AI policy"
-    - "AI law"
-    - "AI 监管"

@@ -66,10 +66,6 @@ class ConfigLoader:
         """获取抓取配置"""
         return self.config.get('fetch_config', {})
 
-    def get_search_keywords(self) -> Dict[str, List[str]]:
-        """获取搜索关键词矩阵"""
-        return self.config.get('search_keywords', {})
-
     def get_all_sources(self) -> Dict[str, List[Dict[str, Any]]]:
         """获取所有数据源"""
         return {

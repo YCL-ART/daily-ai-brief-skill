@@ -9,7 +9,6 @@ from datetime import datetime
 from typing import List, Dict, Any
 
 from .base_fetcher import NewsItem
-from .hotness_evaluator import HotnessEvaluator
 
 
 class ReportGenerator:
@@ -33,7 +32,6 @@ class ReportGenerator:
         os.makedirs(self.output_dir, exist_ok=True)
 
         self.logger = logging.getLogger(__name__)
-        self.hotness_evaluator = HotnessEvaluator()
 
     def generate_daily_report(self, items: List[NewsItem], orchestrator=None) -> str:
         """
@@ -80,8 +78,8 @@ class ReportGenerator:
         Returns:
             JSON报告文件路径
         """
-        # 评估热度
-        evaluated_items = self.hotness_evaluator.evaluate_all(items)
+        # 按发布时间降序排序
+        sorted_items = sorted(items, key=lambda x: x.publish_date, reverse=True)
 
         # 生成报告文件名
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -89,7 +87,7 @@ class ReportGenerator:
         filepath = os.path.join(self.output_dir, filename)
 
         # 转换为字典列表
-        items_dict = [item.to_dict() for item in evaluated_items]
+        items_dict = [item.to_dict() for item in sorted_items]
 
         # 添加元数据
         report_data = {
@@ -351,8 +349,8 @@ class ReportGenerator:
         Returns:
             结构化报告文件路径
         """
-        # 评估热度
-        evaluated_items = self.hotness_evaluator.evaluate_all(items)
+        # 按发布时间降序排序
+        sorted_items = sorted(items, key=lambda x: x.publish_date, reverse=True)
 
         # 生成报告文件名
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -381,14 +379,14 @@ class ReportGenerator:
             "专家观点": [],
         }
 
-        # 首先找出今日头条（热度最高的1-2条）
-        if evaluated_items:
-            # 取热度最高的2条作为今日头条
-            top_items = sorted(evaluated_items, key=lambda x: x.hotness_score, reverse=True)[:2]
+        # 首先找出今日头条（最新的1-2条）
+        if sorted_items:
+            # 取最新的2条作为今日头条
+            top_items = sorted_items[:2]
             categories["今日头条"] = top_items
 
             # 其他新闻按分类分组
-            other_items = [item for item in evaluated_items if item not in top_items]
+            other_items = sorted_items[2:]
             for item in other_items:
                 category = self._get_category(item)
                 # 如果分类不在预定义列表中，放入技术突破
@@ -406,7 +404,6 @@ class ReportGenerator:
 
             for i, item in enumerate(category_items, 1):
                 report_lines.append(f"### {i}. {item.title}")
-                report_lines.append(f"**热度**: {item.hotness_score:.1f}/10")
                 report_lines.append(f"**来源**: {item.source} ({item.source_type})")
                 report_lines.append(f"**发布时间**: {item.publish_date.strftime('%Y-%m-%d %H:%M') if item.publish_date else '未知'}")
                 report_lines.append(f"**链接**: [阅读原文]({item.url})")
@@ -416,7 +413,7 @@ class ReportGenerator:
 
         # 添加统计信息
         report_lines.append("## 📊 统计信息")
-        stats = self._generate_statistics(evaluated_items, orchestrator)
+        stats = self._generate_statistics(sorted_items, orchestrator)
         report_lines.append(stats)
 
         # 保存报告
