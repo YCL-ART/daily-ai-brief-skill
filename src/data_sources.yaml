@@ -15,14 +15,6 @@ rss_sources:
     priority: 1
     num_items: 10
 
-  - name: "InfoQ AI"
-    url: "https://www.infoq.cn/public/v1/article/list"
-    enabled: true
-    priority: 2
-    num_items: 6
-    filters:
-      include_keywords: [ "AI", "人工智能", "大模型", "LLM", "深度学习" ]
-
   - name: "AI科技评论"
     url: "https://www.leiphone.com/feed"
     enabled: false
