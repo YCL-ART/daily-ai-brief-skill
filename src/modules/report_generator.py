@@ -98,8 +98,6 @@ class ReportGenerator:
                 return "国际媒体"
             else:
                 return "其他RSS源"
-        elif source_type == "reddit":
-            return "社区讨论 (Reddit)"
         elif source_type == "twitter" or source_type == "x":
             return "社交媒体 (X/Twitter)"
         elif source_type == "web_scraper":

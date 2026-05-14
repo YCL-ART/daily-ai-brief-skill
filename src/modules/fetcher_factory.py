@@ -7,7 +7,6 @@ from typing import Dict, Any, List, Type, Optional
 
 from .base_fetcher import BaseFetcher
 from .rss_fetcher import RSSFetcher
-from .reddit_fetcher import RedditFetcher
 from .x_fetcher import XFetcher
 from .web_scraper import WebScraper
 from .api_fetcher import APIFetcher
@@ -19,7 +18,6 @@ class FetcherFactory:
     # 抓取器类型映射
     FETCHER_REGISTRY: Dict[str, Type[BaseFetcher]] = {
         "rss": RSSFetcher,
-        "reddit": RedditFetcher,
         "twitter": XFetcher,
         "x": XFetcher,
         "web": WebScraper,
@@ -47,13 +45,6 @@ class FetcherFactory:
         rss_sources = config.get("rss_sources", [])
         for source_config in rss_sources:
             fetcher = self.create_fetcher("rss", source_config)
-            if fetcher:
-                fetchers.append(fetcher)
-
-        # Reddit抓取器
-        reddit_sources = config.get("reddit_sources", [])
-        for source_config in reddit_sources:
-            fetcher = self.create_fetcher("reddit", source_config)
             if fetcher:
                 fetchers.append(fetcher)
 

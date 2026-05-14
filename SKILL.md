@@ -12,7 +12,7 @@ tags: [ai, news, aggregator]
 
 ## 功能特性
 
-- **多源采集**: 支持RSS、Reddit、X/Twitter、网页爬虫、API等多种数据源
+- **多源采集**: 支持RSS、X/Twitter、网页爬虫、API等多种数据源
 - **智能过滤**: 基于关键词和时效性自动过滤内容
 - **智能排序**: 按发布时间降序排列新闻
 - **多格式输出**: 支持Markdown、JSON等多种报告格式
@@ -24,7 +24,7 @@ tags: [ai, news, aggregator]
 - **国内媒体**: 36氪、量子位、新智元等
 - **国际媒体**: MIT Technology Review、TechCrunch、Ars Technica等
 - **学术研究**: OpenAI Blog、Hugging Face Blog、arXiv CS.AI/CS.LG等
-- **社区平台**: Reddit (MachineLearning, LocalLLaMA等)、X/Twitter关键账号
+- **社区平台**: X/Twitter关键账号
 - **行业动态**: Hacker News、行业博客等
 
 ## 安装使用
@@ -59,11 +59,10 @@ python src/main.py
 技能使用YAML格式配置文件 (`src/data_sources.yaml`)，包含以下主要部分：
 
 1. **rss_sources**: RSS订阅源配置
-2. **reddit_sources**: Reddit社区配置
-3. **x_sources**: X/Twitter账号配置
-4. **web_scrapers**: 网页爬虫配置
-5. **api_sources**: API接口配置
-6. **fetch_config**: 抓取全局配置
+2**x_sources**: X/Twitter账号配置
+3**web_scrapers**: 网页爬虫配置
+4**api_sources**: API接口配置
+5**fetch_config**: 抓取全局配置
 
 ### 过滤配置
 
@@ -110,7 +109,7 @@ fetch_config:
 | 字段 | 说明 | 是否必须 |
 |------|------|----------|
 | **标题 (title)** | 新闻标题 | 是 |
-| **来源 (source)** | 新闻来源（如36氪、Reddit等） | 是 |
+| **来源 (source)** | 新闻来源（如36氪等） | 是 |
 | **发布时间 (publish_date)** | 新闻发布时间 | 是 |
 | **链接 (ref)** | 新闻原文链接，用户可点击查询原文 | **必须展示** |
 | **摘要 (summary)** | 新闻摘要 | 是 |

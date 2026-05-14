@@ -46,9 +46,6 @@ class ConfigLoader:
         """获取RSS数据源配置"""
         return self.config.get('rss_sources', [])
 
-    def get_reddit_sources(self) -> List[Dict[str, Any]]:
-        """获取Reddit数据源配置"""
-        return self.config.get('reddit_sources', [])
 
     def get_x_sources(self) -> List[Dict[str, Any]]:
         """获取X/Twitter数据源配置"""

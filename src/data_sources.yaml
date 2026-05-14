@@ -113,35 +113,6 @@ rss_sources:
     priority: 1
     num_items: 10
 
-# Reddit API数据源
-reddit_sources:
-  - name: "Reddit MachineLearning"
-    type: "reddit"
-    subreddit: "MachineLearning"
-    enabled: true
-    priority: 2
-    num_items: 5
-
-  - name: "Reddit LocalLLaMA"
-    type: "reddit"
-    subreddit: "LocalLLaMA"
-    enabled: true
-    priority: 2
-    num_items: 5
-
-  - name: "Reddit Artificial"
-    type: "reddit"
-    subreddit: "artificial"
-    enabled: true
-    priority: 2
-    num_items: 5
-
-  - name: "Reddit Singularity"
-    type: "reddit"
-    subreddit: "singularity"
-    enabled: false
-    priority: 3
-    num_items: 5
 
 # X/Twitter数据源
 x_sources:
@@ -210,7 +181,7 @@ web_scrapers:
   - name: "Google DeepMind Blog"
     url: "https://deepmind.google/blog/"
     selector: "article"
-    enabled: false
+    enabled: true
     priority: 1
     num_items: 5
     use_playwright: true
