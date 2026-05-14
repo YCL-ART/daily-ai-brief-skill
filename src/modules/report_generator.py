@@ -488,12 +488,9 @@ class ReportGenerator:
         # 来源统计
         source_counts = {}
         source_type_counts = {}
-        language_counts = {}
         for item in items:
             source_counts[item.source] = source_counts.get(item.source, 0) + 1
             source_type_counts[item.source_type] = source_type_counts.get(item.source_type, 0) + 1
-            lang = item.language or "unknown"
-            language_counts[lang] = language_counts.get(lang, 0) + 1
 
         # 时间统计
         now = datetime.now()
@@ -520,12 +517,6 @@ class ReportGenerator:
             stats_lines.append("### 来源分布")
             for source_type, count in sorted(source_type_counts.items(), key=lambda x: x[1], reverse=True):
                 stats_lines.append(f"- {source_type}: {count} 条")
-
-        if language_counts:
-            stats_lines.append("")
-            stats_lines.append("### 语言分布")
-            for language, count in sorted(language_counts.items(), key=lambda x: x[1], reverse=True):
-                stats_lines.append(f"- {language}: {count} 条")
 
         if source_counts:
             stats_lines.append("")
