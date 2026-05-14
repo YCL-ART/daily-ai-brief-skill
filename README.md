@@ -69,7 +69,6 @@ python src/main.py
 rss_sources:
   - name: "36氪 AI科技"
     url: "https://www.36kr.com/feed"
-    language: "zh"
     enabled: true
     priority: 1
     num_items: 10
