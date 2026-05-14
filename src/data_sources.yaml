@@ -244,7 +244,7 @@ x_sources:
     usernames: [ "AYi_AInotes", "MiniMax_AI" ]
     enabled: true
     priority: 2
-    num_items: 5
+    num_items: 2
 
   - name: "AI研究"
     usernames: [ "berryxia", "MSFTResearch", "karpathy", "swyx", "vista8", "ylecun", "ilyasut", "emollick", "nathanbenaich" ]
