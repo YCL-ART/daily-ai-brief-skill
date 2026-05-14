@@ -11,19 +11,13 @@ rss_sources:
 
   - name: "量子位"
     url: "https://www.qbitai.com/feed"
-    enabled: true
-    priority: 1
-    num_items: 8
-
-  - name: "新智元"
-    url: "https://www.xinzhiyuan.com/feed"
     enabled: false
-    priority: 2
-    num_items: 6
+    priority: 1
+    num_items: 10
 
   - name: "InfoQ AI"
     url: "https://www.infoq.cn/public/v1/article/list"
-    enabled: false
+    enabled: true
     priority: 2
     num_items: 6
     filters:
