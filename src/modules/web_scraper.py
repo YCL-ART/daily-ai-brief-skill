@@ -223,7 +223,6 @@ class WebScraper(BaseFetcher):
             summary=self.cleanup_content(content[:200]),
             source=self.name,
             source_type="web",
-            language=self.language,
             publish_date=publish_date,
             metadata={
                 "url": self.url,
@@ -292,7 +291,6 @@ class WebScraper(BaseFetcher):
             summary=self.cleanup_content(content[:200]),
             source=self.name,
             source_type="web",
-            language=self.language,
             publish_date=publish_date,
             metadata={
                 "url": self.url,

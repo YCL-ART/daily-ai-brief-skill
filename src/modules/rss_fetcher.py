@@ -138,7 +138,6 @@ class RSSFetcher(BaseFetcher):
             publish_date=publish_date,
             author=author,
             tags=tags,
-            language=self.language,
             metadata={
                 "rss_feed": self.url,
                 "source_name": self.name,

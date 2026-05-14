@@ -275,7 +275,6 @@ class XPlaywrightFetcher(BaseFetcher):
             summary=self.cleanup_content(title_clean[:150]),
             source=self.name,
             source_type="twitter",
-            language=self.language,
             publish_date=publish_date,
             author=username,
             metadata={

@@ -25,7 +25,6 @@ class RedditFetcher(BaseFetcher):
         rss_config = {
             "name": self.name,
             "url": self.rss_url,
-            "language": self.language,
             "enabled": self.enabled,
             "priority": self.priority,
             "num_items": self.max_items,
