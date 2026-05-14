@@ -48,7 +48,7 @@ class ReportGenerator:
         sorted_items = sorted(items, key=lambda x: x.publish_date, reverse=True)
 
         # 生成报告文件名
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H")
         filename = f"ai_news_report_{timestamp}.json"
         filepath = os.path.join(self.output_dir, filename)
 
@@ -214,7 +214,7 @@ class ReportGenerator:
         sorted_items = sorted(items, key=lambda x: x.publish_date, reverse=True)
 
         # 生成报告文件名
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H")
         filename = f"ai_news_report_{timestamp}.md"
         filepath = os.path.join(self.output_dir, filename)
 
