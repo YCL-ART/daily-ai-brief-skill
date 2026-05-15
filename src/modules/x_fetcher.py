@@ -102,11 +102,39 @@ class XPlaywrightFetcher(BaseFetcher):
 
             items = []
             async with async_playwright() as p:
-                browser = await p.chromium.launch(headless=True)
+                # 使用更真实的浏览器配置
+                browser = await p.chromium.launch(
+                    headless=True,
+                    args=[
+                        '--disable-blink-features=AutomationControlled',
+                        '--disable-dev-shm-usage',
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-accelerated-2d-canvas',
+                        '--disable-gpu',
+                    ]
+                )
                 context = await browser.new_context(
-                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                    viewport={'width': 1920, 'height': 1080},
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    locale='en-US',
+                    timezone_id='America/New_York',
+                    permissions=[],
+                    extra_http_headers={
+                        'Accept-Language': 'en-US,en;q=0.9',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                    }
                 )
                 page = await context.new_page()
+
+                # 隐藏自动化特征
+                await page.add_init_script("""
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined
+                    });
+                """)
 
                 for username in self.usernames:
                     user_items = await self._fetch_user_with_playwright(page, username)
@@ -142,13 +170,18 @@ class XPlaywrightFetcher(BaseFetcher):
         """
         self.logger.info(f"爬取用户: @{username}")
 
-        # Nitter实例列表（按优先级排序）
+        # Nitter实例列表（按优先级排序） - 扩展列表
         nitter_instances = [
-            "https://nitter.net",
+            "https://nitter.net",  # 主要实例
+            "https://nitter.tiekoetter.com",
+            "https://nitter.privacydev.net",
             "https://nitter.fdn.fr",
             "https://nitter.1d4.us",
             "https://nitter.unixfox.eu",
             "https://nitter.nixnet.services",
+            "https://nitter.poast.org",
+            "https://nitter.weiler.rocks",
+            "https://nitter.sethforprivacy.com",
         ]
 
         for nitter_base in nitter_instances:
@@ -156,72 +189,104 @@ class XPlaywrightFetcher(BaseFetcher):
                 # 使用Nitter进行无登录采集
                 url = f"{nitter_base}/{username}"
                 self.logger.info(f"尝试Nitter实例: {url}")
-                response = await page.goto(url, wait_until="networkidle", timeout=15000)
+
+                # 设置更真实的请求头
+                await page.set_extra_http_headers({
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-User': '?1',
+                    'Cache-Control': 'max-age=0',
+                })
+
+                # 尝试不同等待策略
+                response = await page.goto(url, wait_until="domcontentloaded", timeout=20000)
 
                 if response and response.status != 200:
                     self.logger.warning(f"Nitter实例返回状态码 {response.status}: {nitter_base}")
                     continue
 
-                await page.wait_for_timeout(self.playwright_wait_seconds * 1000)
+                # 等待更长的时间让页面加载
+                for wait_seconds in [2, 3, 5]:
+                    await page.wait_for_timeout(wait_seconds * 1000)
 
-                # 检查页面是否包含有效内容
-                content = await page.content()
-                if len(content) < 100:
-                    self.logger.warning(f"Nitter实例返回内容过少 ({len(content)} 字节): {nitter_base}")
-                    continue
+                    # 检查页面是否包含有效内容
+                    content = await page.content()
+                    content_length = len(content)
+                    self.logger.debug(f"等待 {wait_seconds} 秒后内容大小: {content_length} 字节")
 
-                # 检查是否有错误消息
-                error_selectors = [
-                    'text=User not found',
-                    'text=User suspended',
-                    'text=This account is private',
-                    'text=Something went wrong',
-                    'text=Rate limit exceeded',
-                ]
+                    # 如果内容过少，跳过这个实例
+                    if content_length < 500:
+                        self.logger.warning(f"Nitter实例返回内容过少 ({content_length} 字节): {nitter_base}")
+                        continue
 
-                has_error = False
-                for selector in error_selectors:
-                    if await page.is_visible(selector):
-                        self.logger.warning(f"页面包含错误: {selector}")
-                        has_error = True
-                        break
+                    # 检查是否有错误消息
+                    error_selectors = [
+                        'text=User not found',
+                        'text=User suspended',
+                        'text=This account is private',
+                        'text=Something went wrong',
+                        'text=Rate limit exceeded',
+                        'text=doesn\'t exist',
+                        'text=not found',
+                    ]
 
-                if has_error:
-                    continue
+                    has_error = False
+                    for selector in error_selectors:
+                        if await page.is_visible(selector):
+                            self.logger.warning(f"页面包含错误: {selector}")
+                            has_error = True
+                            break
 
-                # 这里需要根据X/Twitter页面结构提取推文
-                # 实际实现需要分析页面DOM结构
-                # 示例选择器（可能需要调整）
-                tweet_selectors = [
-                    'article[data-testid="tweet"]',
-                    'div[data-testid="tweet"]',
-                    'div[role="article"]',
-                    '.tweet',
-                    'article',
-                ]
+                    if has_error:
+                        continue
 
-                items = []
-                for selector in tweet_selectors:
-                    tweets = await page.query_selector_all(selector)
-                    if tweets:
-                        self.logger.info(f"找到 {len(tweets)} 个推文 (选择器: {selector})")
-                        for tweet in tweets[:self.max_items]:
-                            try:
-                                item = await self._parse_tweet_element(tweet, username)
-                                if item:
-                                    items.append(item)
-                            except Exception as e:
-                                self.logger.debug(f"解析推文失败: {e}")
-                        break
+                    # 检查是否有推文内容 - 扩展选择器
+                    tweet_selectors = [
+                        'article[data-testid="tweet"]',
+                        'div[data-testid="tweet"]',
+                        'div[role="article"]',
+                        '.tweet',
+                        'article.tweet',
+                        'div.tweet',
+                        '.timeline-item',
+                        '.tweet-body',
+                        'article',
+                        'div[class*="tweet"]',
+                    ]
 
-                if items:
-                    self.logger.info(f"成功从 {nitter_base} 获取 {len(items)} 个推文")
-                    return items
-                else:
-                    self.logger.warning(f"从 {nitter_base} 未找到推文")
+                    items = []
+                    for selector in tweet_selectors:
+                        try:
+                            tweets = await page.locator(selector).all()
+                            if tweets:
+                                self.logger.info(f"找到 {len(tweets)} 个推文 (选择器: {selector})")
+                                for tweet in tweets[:self.max_items]:
+                                    try:
+                                        item = await self._parse_tweet_element(tweet, username)
+                                        if item:
+                                            items.append(item)
+                                    except Exception as e:
+                                        self.logger.debug(f"解析推文失败: {e}")
+                                break
+                        except Exception as e:
+                            self.logger.debug(f"选择器 {selector} 失败: {e}")
+                            continue
+
+                    if items:
+                        self.logger.info(f"成功从 {nitter_base} 获取 {len(items)} 个推文")
+                        return items
+                    else:
+                        self.logger.warning(f"从 {nitter_base} 未找到推文，尝试下一等待周期")
 
             except Exception as e:
                 self.logger.warning(f"Nitter实例 {nitter_base} 失败: {e}")
+                # 尝试下一个实例
                 continue
 
         self.logger.error(f"所有Nitter实例均失败: @{username}")
