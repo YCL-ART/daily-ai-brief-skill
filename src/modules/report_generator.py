@@ -92,7 +92,7 @@ class ReportGenerator:
                 return "国内媒体"
             elif "arxiv" in source:
                 return "学术研究"
-            elif any(kw in source for kw in ["openai", "anthropic", "google", "deepmind", "meta", "microsoft", "huggingface"]):
+            elif any(kw in source for kw in ["openai", "anthropic", "google", "deepmind", "meta", "microsoft"]):
                 return "官方博客"
             elif any(kw in source for kw in ["mit", "techcrunch", "theverge", "arstechnica"]):
                 return "国际媒体"

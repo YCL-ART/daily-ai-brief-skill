@@ -81,7 +81,7 @@ rss_sources:
 
   - name: "Hugging Face Blog"
     url: "https://huggingface.co/blog/feed.xml"
-    enabled: false
+    enabled: true
     priority: 1
     num_items: 5
 
@@ -181,16 +181,8 @@ web_scrapers:
   - name: "Google DeepMind Blog"
     url: "https://deepmind.google/blog/"
     selector: "article"
-    enabled: true
-    priority: 1
-    num_items: 5
-    use_playwright: true
-
-  - name: "Hugging Face Models"
-    url: "https://huggingface.co/models"
-    selector: ".model-card"
     enabled: false
-    priority: 2
+    priority: 1
     num_items: 5
     use_playwright: true
 
